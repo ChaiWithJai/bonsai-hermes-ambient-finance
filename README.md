@@ -2,6 +2,8 @@
 
 The local job reviews a fictional investment portfolio while the team is away. It calculates position and sector weights, applies two stated scenario shocks, checks research age and saves a draft for human review. Hermes can use Ternary Bonsai 2 27B to explain the work item through two read-only tools. The supplied tools cannot place trades or update the portfolio.
 
+The [public reproduction guide](https://gist.github.com/ChaiWithJai/e53e6e13fcecb0946643c02497419b81) gives the short command sequence, including the retry needed to request a model draft after the deterministic nightly run.
+
 The included prices, issuers, analyst notes and methodology are invented. The sample date is September 25, 2026, and a run for a later date will be blocked until the price data are refreshed. Scenario outcomes are arithmetic results under assumed price changes. They are not forecasts, backtests or evidence of investment returns.
 
 ## Review the source data
