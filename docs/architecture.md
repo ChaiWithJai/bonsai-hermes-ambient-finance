@@ -37,3 +37,7 @@ The readiness check covers startup ordering, but cannot guarantee the model stay
 ## Store scheduled work outside the checkout
 
 Set `AMBIENT_FINANCE_RUNS` to an absolute directory before creating the Hermes profile and installing the LaunchAgent. Both installers preserve the directory so the scheduler, worker and agent read the same work items. Keep the variable exported for direct CLI commands too. Existing profiles and LaunchAgents require configuration updates to move their queue; copying files alone does not change their paths.
+
+## Require a saved final answer
+
+The scheduled worker records the current Hermes message cursor before generation. After a successful process exit, it finds exactly one new session with the submitted prompt and reads its final assistant content. Missing, ambiguous or empty final content marks the model attempt as failed, even when the CLI printed text. Raw stdout remains in an ignored diagnostic log. The saved answer still requires factual and human review. Use `--session-db` when the selected profile stores its database outside the standard `~/.hermes/profiles/<profile>/state.db` location.

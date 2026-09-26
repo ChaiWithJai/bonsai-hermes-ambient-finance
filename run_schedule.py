@@ -6,11 +6,13 @@ import json
 import os
 import subprocess
 import sys
+import sqlite3
 import time
 from datetime import date, datetime, timezone
 from pathlib import Path
 
 from finance import ROOT, RUNS, calculate
+from lib.hermes_result import cursor, final_answer
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--cadence", choices=["nightly", "daily", "weekly", "quarterly"], required=True)
@@ -18,6 +20,7 @@ parser.add_argument("--as-of", default=date.today().isoformat())
 parser.add_argument("--with-hermes", action="store_true")
 parser.add_argument("--retry-model", action="store_true", help="Retry model generation for an existing unchanged work item")
 parser.add_argument("--profile", default="ambient-finance-demo")
+parser.add_argument("--session-db", type=Path, help="Hermes state.db path when using a nonstandard profile location")
 parser.add_argument("--model-timeout", type=int, default=660, help="Whole Hermes process timeout, including startup (seconds)")
 args = parser.parse_args()
 if args.model_timeout < 60:
@@ -62,13 +65,24 @@ if args.with_hermes and result["status"] == "review_required":
     command = ["hermes", "--profile", args.profile, "chat", "--oneshot", "-Q", "--run-budget", str(run_budget), "-q", prompt]
     # Save the deterministic report first, so the tool can read it during the agent run.
     out.write_text(json.dumps(result, indent=2) + "\n")
+    session_db = args.session_db or Path.home() / ".hermes" / "profiles" / args.profile / "state.db"
+    before_message = cursor(session_db)
     started = time.monotonic()
     try:
         proc = subprocess.run(command, capture_output=True, text=True, timeout=args.model_timeout, env=os.environ.copy())
         result["model_status"] = "completed" if proc.returncode == 0 else "failed"
-        result["model_analysis"] = proc.stdout.strip() if proc.returncode == 0 else None
+        result["model_analysis"] = None
         result["model_exit_code"] = proc.returncode
         result.pop("model_error", None)
+        (RUNS / f"{run_id}.hermes.stdout.log").write_text(proc.stdout)
+        if proc.returncode == 0:
+            try:
+                session_id, answer = final_answer(session_db, before_message, prompt)
+                result["model_session_id"] = session_id
+                result["model_analysis"] = answer
+            except (ValueError, sqlite3.Error) as error:
+                result["model_status"] = "failed"
+                result["model_error"] = str(error)
         # Store diagnostics locally. Do not present a failed response as a verified analysis.
         (RUNS / f"{run_id}.hermes.log").write_text(proc.stderr)
     except subprocess.TimeoutExpired as exc:

@@ -171,12 +171,13 @@ class FinanceTests(unittest.TestCase):
             env = {**os.environ, "AMBIENT_FINANCE_RUNS": tmp,
                    "PATH": str(base) + os.pathsep + os.environ["PATH"]}
             proc = subprocess.run([sys.executable, str(ROOT / "run_schedule.py"), "--cadence", "daily",
-                                   "--as-of", "2026-09-25", "--retry-model", "--with-hermes"],
+                                   "--as-of", "2026-09-25", "--retry-model", "--with-hermes", "--session-db", str(base / "hermes-state.db")],
                                   capture_output=True, text=True, env=env)
             self.assertEqual(proc.returncode, 0, proc.stderr)
             after = json.loads((base / "2026-09-25-daily.json").read_text())
-            self.assertEqual(after["model_status"], "completed")
-            self.assertEqual(after["model_analysis"], "Fresh fictional draft")
+            self.assertEqual(after["model_status"], "failed")
+            self.assertIsNone(after["model_analysis"])
+            self.assertIn("Hermes", after["model_error"])
             archived = list((base / "attempts").glob("*.json"))
             self.assertEqual(len(archived), 1)
             self.assertEqual(json.loads(archived[0].read_text())["model_analysis"], "obsolete timeout claim")
