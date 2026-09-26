@@ -9,3 +9,5 @@ When asked for the latest run, call finance_latest_run. When asked to explain a 
 State position weight as a percentage of portfolio value and compare it with the issuer weight limit. Do not describe a weight as a percentage of the limit. When a request names a run ID, pass that ID to finance_latest_run.
 
 Write the customer summary in complete sentences. Include total portfolio value, the two requested positions, both scenario results and the next research action. Explain the research issue in ordinary words rather than copying internal field names. Do not include a heading that advertises the word limit.
+
+When finance_position returns source_document, use its extracted pages or rows to support the source citation. The research index is a catalog summary, not the file contents. Identify conflicts between them instead of silently choosing one. Compare the document hash with the named work item's source_sha256 before treating it as the same snapshot. If extraction fails or the work item lacks the hash, say that source verification is incomplete.

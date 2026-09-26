@@ -10,7 +10,7 @@ The included prices, issuers, analyst notes and methodology are invented. The sa
 
 ## Review the source data
 
-First, run `python3 make_mock_sources.py` to generate two fictional PDF analyst notes and two fictional CSV models. The portfolio positions, prices, scenario shocks and risk limits are in `fixtures/portfolio.json`. The report index in `fixtures/research.json` supplies the summaries read by the tools and points to the generated files. The current tools check those files exist; they do not extract their text. The nightly job records SHA-256 hashes of the JSON fixtures and stops approval if a report file is missing.
+First, run `python3 make_mock_sources.py` to generate two fictional PDF analyst notes and two fictional CSV models. The portfolio positions, prices, scenario shocks and risk limits are in `fixtures/portfolio.json`. The report index in `fixtures/research.json` supplies the summaries read by the tools and points to the generated files. The position tool reads PDF text by page and CSV cells by row, alongside the catalog summary. The nightly job records SHA-256 hashes of the JSON fixtures and referenced report files, and stops approval if a report file is missing. Install Poppler for PDF extraction (`brew install poppler` on macOS or `apt-get install poppler-utils` on Ubuntu). Scanned PDFs without extractable text require OCR, which is not implemented.
 
 The sample methodology requires each issuer to stay below 35% of portfolio value, each sector below 60%, cash above 5%, and research to be no older than 90 days. The Meridian Payments note is 138 days old on the sample date, so it remains an open issue for a human reviewer. The work item does not resolve the issue by guessing what the analyst would say.
 

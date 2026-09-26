@@ -152,5 +152,32 @@ class FinanceTests(unittest.TestCase):
             self.assertFalse(record["identity_verified"])
 
 
+class SourceDocumentTests(unittest.TestCase):
+    def test_pdf_content_is_extracted_with_page_and_hash(self):
+        result = finance.execute("finance_position", {"position_id": "FIC-AST"})
+        source = result["source_document"]
+        self.assertEqual(source["pages"][0]["page"], 1)
+        self.assertIn("Customer concentration", source["pages"][0]["text"])
+        self.assertEqual(len(source["sha256"]), 64)
+
+    def test_changed_csv_is_read_even_when_catalog_summary_is_unchanged(self):
+        import shutil
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for name in ("fixtures", "mock-drive", "mock-sheets"):
+                shutil.copytree(ROOT / name, root / name)
+            with patch.object(finance, "ROOT", root):
+                before = finance.calculate("2026-09-25", "nightly")
+                path = root / "mock-sheets/cirrus-grid-model.csv"
+                path.write_text(path.read_text().replace("Capital spending could reduce free cash flow.",
+                                                        "A major renewal has been delayed."))
+                result = finance.execute("finance_position", {"position_id": "FIC-CIR"})
+                self.assertIn("Capital spending", result["research"]["risk"])
+                self.assertIn("A major renewal has been delayed.", str(result["source_document"]["rows"]))
+                after = finance.calculate("2026-09-25", "nightly")
+                key = "mock-sheets/cirrus-grid-model.csv"
+                self.assertNotEqual(before["source_sha256"][key], after["source_sha256"][key])
+
+
 if __name__ == "__main__":
     unittest.main()
