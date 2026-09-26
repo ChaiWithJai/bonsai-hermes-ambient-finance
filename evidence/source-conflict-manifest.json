@@ -1,0 +1,7 @@
+{
+  "base_revision": "8479126",
+  "change": "Only isolated Cirrus CSV risk text changed; catalog and original sources preserved",
+  "csv_sha256": "0dab5144c7ec3e97b00e06c803529c83e07e098af261bfa2ceeae1c1d025c425",
+  "catalog_sha256": "a9b63a86d0d26cf1f307e5e8a7b9c8a2af5024993beb6c98c135537320287923",
+  "test_limitation": "The replacement contained an unquoted comma, splitting the risk into adjacent CSV cells. Conflict detection is observed, but this is not a clean single-cell or performance comparison."
+}

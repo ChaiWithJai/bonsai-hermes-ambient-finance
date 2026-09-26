@@ -1,0 +1,17 @@
+{
+  "revision": "8479126405ade0ccd038898636cf0387bbd35ec4",
+  "profile": "ambient-finance-source-read",
+  "model": "bonsai-ui-public-ternary-bonsai2",
+  "base_url": "http://127.0.0.1:5264/v1",
+  "sha256": {
+    "finance.py": "23f56a68bfc7070c25037d57ff5f64bdff2dc2ab987a200a3975f01e392b7888",
+    "lib/source_documents.py": "7fe1820af9406450506381490ffb6c26253e70f9c23822ea276c98fdeecaca34",
+    "SOUL.md": "38d1426f30aa36fa5b2afd87410d2484b9a56523d59abd8014042aec74f611c6",
+    "hermes-config.json": "01d22b8818e21518fac77d3293dd1abf21aa52198b205d465088de14de5ac94b",
+    "sampling.json": "af76223d9c54036da433160229981200b426710f33b7b1048d76c83d1b0fd6b5",
+    "mock-drive/aster-compute-analyst-note.pdf": "5dd49704f5ea69d921431616772ae8c49ca0a1310d79f18ade69b3cfe7a02968",
+    "mock-sheets/cirrus-grid-model.csv": "bd72bd18bd3468cc770d807a6775006aadb5f57966689140d250310382822356",
+    "fixtures/research.json": "a9b63a86d0d26cf1f307e5e8a7b9c8a2af5024993beb6c98c135537320287923"
+  },
+  "scope": "Direct model source-reading check on local sample documents; no new scheduled or Slack execution."
+}
