@@ -5,7 +5,7 @@ import argparse
 import json
 import urllib.request
 
-from finance import calculate
+from finance import RUNS, calculate
 import subprocess
 import sys
 import time
@@ -59,7 +59,7 @@ def tick(now: datetime, dry_run: bool = False) -> list[dict]:
     output = []
     for cadence in due(now):
         run_id = f"{local.date().isoformat()}-{cadence}"
-        path = ROOT / "runs" / f"{run_id}.json"
+        path = RUNS / f"{run_id}.json"
         if path.exists():
             output.append({"cadence": cadence, "status": "already_recorded"})
             continue

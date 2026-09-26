@@ -103,14 +103,14 @@ class FinanceTests(unittest.TestCase):
             base = Path(tmp)
             (base / "runs").mkdir()
             (base / "runs/2026-09-25-daily.json").write_text("{}")
-            with patch.object(scheduler, "ROOT", base):
+            with patch.object(scheduler, "RUNS", base / "runs"):
                 result = scheduler.tick(datetime(2026, 9, 25, 9, tzinfo=ZoneInfo("America/New_York")), dry_run=True)
             self.assertEqual(result, [{"cadence": "daily", "status": "already_recorded"}])
 
     def test_schedule_waits_for_model_then_runs_without_losing_item(self):
         with tempfile.TemporaryDirectory() as tmp:
             now = datetime(2026, 9, 25, 9, tzinfo=ZoneInfo("America/New_York"))
-            with patch.object(scheduler, "ROOT", Path(tmp)), patch.object(scheduler, "model_ready", side_effect=[False, True]), patch.object(scheduler.subprocess, "run") as run:
+            with patch.object(scheduler, "RUNS", Path(tmp) / "runs"), patch.object(scheduler, "model_ready", side_effect=[False, True]), patch.object(scheduler.subprocess, "run") as run:
                 run.return_value = subprocess.CompletedProcess([], 0, "saved", "")
                 self.assertEqual(scheduler.tick(now)[0]["status"], "waiting_for_model")
                 run.assert_not_called()
@@ -121,11 +121,37 @@ class FinanceTests(unittest.TestCase):
     def test_stale_data_is_recorded_even_without_model(self):
         with tempfile.TemporaryDirectory() as tmp:
             now = datetime(2026, 9, 26, 9, tzinfo=ZoneInfo("America/New_York"))
-            with patch.object(scheduler, "ROOT", Path(tmp)), patch.object(scheduler, "model_ready") as ready, patch.object(scheduler.subprocess, "run") as run:
+            with patch.object(scheduler, "RUNS", Path(tmp) / "runs"), patch.object(scheduler, "model_ready") as ready, patch.object(scheduler.subprocess, "run") as run:
                 run.return_value = subprocess.CompletedProcess([], 0, "blocked", "")
                 self.assertEqual(scheduler.tick(now)[0]["status"], "recorded")
                 ready.assert_not_called()
                 run.assert_called_once()
+
+    def test_scheduler_and_worker_share_external_run_directory(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            run_dir = Path(tmp) / "external-queue"
+            now = datetime(2026, 9, 26, 9, tzinfo=ZoneInfo("America/New_York"))
+            with patch.dict(os.environ, {"AMBIENT_FINANCE_RUNS": str(run_dir)}), patch.object(scheduler, "RUNS", run_dir):
+                first = scheduler.tick(now)
+                self.assertEqual(first[0]["status"], "recorded")
+                saved = run_dir / "2026-09-26-daily.json"
+                self.assertEqual(json.loads(saved.read_text())["model_status"], "skipped_data_gate")
+                before = saved.read_bytes()
+                self.assertEqual(scheduler.tick(now)[0]["status"], "already_recorded")
+                self.assertEqual(saved.read_bytes(), before)
+
+    def test_profile_and_launch_agent_preserve_external_run_directory(self):
+        import install_launch_agent
+        with tempfile.TemporaryDirectory() as tmp:
+            run_dir = str(Path(tmp) / "queue")
+            profile = Path(tmp) / "profile"
+            with patch.dict(os.environ, {"AMBIENT_FINANCE_RUNS": run_dir}):
+                subprocess.run([sys.executable, str(ROOT / "setup.py"), "--out", str(profile)], check=True, capture_output=True)
+                saved = json.loads((profile / "config.yaml").read_text())
+                self.assertEqual(saved["mcp_servers"]["ambient_finance"]["env"]["AMBIENT_FINANCE_RUNS"], run_dir)
+                with patch.object(install_launch_agent.shutil, "which", return_value="/usr/local/bin/hermes"):
+                    agent = install_launch_agent.config(Path(sys.executable))
+                self.assertEqual(agent["EnvironmentVariables"]["AMBIENT_FINANCE_RUNS"], run_dir)
 
     def test_retry_does_not_feed_prior_draft_to_model(self):
         with tempfile.TemporaryDirectory() as tmp:

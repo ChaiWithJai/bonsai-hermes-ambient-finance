@@ -33,3 +33,7 @@ Full model exchanges remain on disk and can contain the supplied portfolio data.
 Before creating an eligible work item, the scheduler checks the configured proxy for the expected model ID. If the endpoint is unavailable, it reports `waiting_for_model` and leaves the item uncreated so the next scheduled pass can try again. A data-blocked item is recorded without requiring the model. The check does not generate tokens.
 
 The readiness check covers startup ordering, but cannot guarantee the model stays available during generation. A failure after the check is preserved in the work item and requires the documented `--retry-model` command. A successful readiness response does not prove inference capacity or recovery after a workstation restart.
+
+## Store scheduled work outside the checkout
+
+Set `AMBIENT_FINANCE_RUNS` to an absolute directory before creating the Hermes profile and installing the LaunchAgent. Both installers preserve the directory so the scheduler, worker and agent read the same work items. Keep the variable exported for direct CLI commands too. Existing profiles and LaunchAgents require configuration updates to move their queue; copying files alone does not change their paths.

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import plistlib
 import shutil
 import subprocess
@@ -24,13 +25,16 @@ def config(python: Path) -> dict:
         str(Path(hermes).parent), str(python.parent),
         "/opt/homebrew/bin", "/usr/local/bin", "/usr/bin", "/bin", "/usr/sbin", "/sbin",
     ]))
+    environment = {"PATH": path, "MLFLOW_DISABLE_AGENT_HINT": "1"}
+    if os.environ.get("AMBIENT_FINANCE_RUNS"):
+        environment["AMBIENT_FINANCE_RUNS"] = str(Path(os.environ["AMBIENT_FINANCE_RUNS"]).expanduser().absolute())
     return {
         "Label": LABEL,
         "ProgramArguments": [str(python), str(ROOT / "scheduler.py"), "--once"],
         "WorkingDirectory": str(ROOT),
         "RunAtLoad": True,
         "StartInterval": 300,
-        "EnvironmentVariables": {"PATH": path, "MLFLOW_DISABLE_AGENT_HINT": "1"},
+        "EnvironmentVariables": environment,
         "StandardOutPath": str(LOGS / "ambient-finance.out.log"),
         "StandardErrorPath": str(LOGS / "ambient-finance.err.log"),
     }

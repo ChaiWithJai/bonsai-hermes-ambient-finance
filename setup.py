@@ -1,6 +1,7 @@
 """Create a separate Hermes profile that points to this demo's read-only MCP server."""
 import argparse
 import json
+import os
 import shutil
 import sys
 from pathlib import Path
@@ -16,6 +17,10 @@ out.mkdir(parents=True)
 config = json.loads((ROOT / "config" / "hermes-config.json").read_text())
 config["mcp_servers"]["ambient_finance"]["command"] = sys.executable
 config["mcp_servers"]["ambient_finance"]["args"] = [str(ROOT / "finance.py")]
+if os.environ.get("AMBIENT_FINANCE_RUNS"):
+    config["mcp_servers"]["ambient_finance"]["env"] = {
+        "AMBIENT_FINANCE_RUNS": str(Path(os.environ["AMBIENT_FINANCE_RUNS"]).expanduser().absolute())
+    }
 (out / "config.yaml").write_text(json.dumps(config, indent=2) + "\n")
 shutil.copy2(ROOT / "config" / "SOUL.md", out / "SOUL.md")
 print(out)
