@@ -1,0 +1,18 @@
+{
+  "fictional": true,
+  "as_of": "2026-09-25",
+  "currency": "USD",
+  "methodology": "Northstar Growth: seek durable revenue growth while keeping each issuer below 35% of total portfolio value, each sector below 60%, and cash above 5%.",
+  "cash": 85000,
+  "positions": [
+    {"id": "FIC-AST", "issuer": "Aster Compute", "sector": "Infrastructure", "shares": 1200, "close": 110, "prior_close": 108, "price_date": "2026-09-25", "research_id": "R-AST"},
+    {"id": "FIC-CIR", "issuer": "Cirrus Grid", "sector": "Infrastructure", "shares": 1800, "close": 75, "prior_close": 76, "price_date": "2026-09-25", "research_id": "R-CIR"},
+    {"id": "FIC-HEL", "issuer": "Helix Health", "sector": "Healthcare", "shares": 2500, "close": 64, "prior_close": 63, "price_date": "2026-09-25", "research_id": "R-HEL"},
+    {"id": "FIC-MER", "issuer": "Meridian Payments", "sector": "Financial technology", "shares": 1400, "close": 92, "prior_close": 94, "price_date": "2026-09-25", "research_id": "R-MER"}
+  ],
+  "scenarios": [
+    {"id": "S-DOWNSIDE", "name": "Customer spending contraction", "description": "Illustrative one-period price shocks selected by the fictional investment team, not a statistical forecast.", "shocks": {"FIC-AST": -0.20, "FIC-CIR": -0.12, "FIC-HEL": -0.06, "FIC-MER": -0.14}},
+    {"id": "S-UPSIDE", "name": "Enterprise demand expansion", "description": "Illustrative one-period price shocks selected by the fictional investment team, not a statistical forecast.", "shocks": {"FIC-AST": 0.16, "FIC-CIR": 0.08, "FIC-HEL": 0.05, "FIC-MER": 0.11}}
+  ],
+  "limits": {"max_issuer_weight": 0.35, "max_sector_weight": 0.60, "min_cash_weight": 0.05, "max_research_age_days": 90}
+}

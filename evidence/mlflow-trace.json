@@ -1,0 +1,8 @@
+{
+  "run_id": "2026-09-25-daily",
+  "trace_id": "tr-ac768cad07c06ad8bb1ded2fee579f36",
+  "experiment_id": "42",
+  "trace_status": "OK",
+  "passed": true,
+  "scope": "Offline checks on the captured model draft. This trace does not claim a completed Hermes CLI process or online trade evaluation."
+}

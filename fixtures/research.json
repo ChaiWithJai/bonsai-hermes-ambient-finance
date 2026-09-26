@@ -1,0 +1,9 @@
+{
+  "fictional": true,
+  "reports": [
+    {"id": "R-AST", "issuer_id": "FIC-AST", "date": "2026-09-18", "source": "mock-drive/aster-compute-analyst-note.pdf", "thesis": "Recurring infrastructure subscriptions may offset slower new deployments.", "risk": "Customer concentration could make renewal growth volatile.", "analyst": "Mira Chen"},
+    {"id": "R-CIR", "issuer_id": "FIC-CIR", "date": "2026-09-11", "source": "mock-sheets/cirrus-grid-model.csv", "thesis": "Network capacity contracts support a stable revenue base.", "risk": "Capital spending could reduce free cash flow.", "analyst": "Owen Patel"},
+    {"id": "R-HEL", "issuer_id": "FIC-HEL", "date": "2026-08-28", "source": "mock-drive/helix-health-review.pdf", "thesis": "Clinic adoption could grow if integration costs remain low.", "risk": "Reimbursement policy may delay deployments.", "analyst": "Mira Chen"},
+    {"id": "R-MER", "issuer_id": "FIC-MER", "date": "2026-05-10", "source": "mock-sheets/meridian-payments-model.csv", "thesis": "Transaction volume could rise with merchant additions.", "risk": "The research is older than the team's 90-day review limit.", "analyst": "Owen Patel"}
+  ]
+}

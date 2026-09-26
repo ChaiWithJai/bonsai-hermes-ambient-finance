@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "fictional": true,
+  "as_of": "2026-09-25",
+  "cadence": "daily",
+  "methodology": "Northstar Growth: seek durable revenue growth while keeping each issuer below 35% of total portfolio value, each sector below 60%, and cash above 5%.",
+  "status": "review_required",
+  "total_value_usd": "640800.00",
+  "cash_usd": "85000.00",
+  "cash_weight_pct": "13.26",
+  "daily_change_from_prior_close_usd": "300.00",
+  "positions": [
+    {
+      "id": "FIC-AST",
+      "issuer": "Aster Compute",
+      "sector": "Infrastructure",
+      "value_usd": "132000.00",
+      "weight_pct": "20.60",
+      "change_from_prior_close_usd": "2400.00",
+      "research_id": "R-AST",
+      "price_date": "2026-09-25"
+    },
+    {
+      "id": "FIC-CIR",
+      "issuer": "Cirrus Grid",
+      "sector": "Infrastructure",
+      "value_usd": "135000.00",
+      "weight_pct": "21.07",
+      "change_from_prior_close_usd": "-1800.00",
+      "research_id": "R-CIR",
+      "price_date": "2026-09-25"
+    },
+    {
+      "id": "FIC-HEL",
+      "issuer": "Helix Health",
+      "sector": "Healthcare",
+      "value_usd": "160000.00",
+      "weight_pct": "24.97",
+      "change_from_prior_close_usd": "2500.00",
+      "research_id": "R-HEL",
+      "price_date": "2026-09-25"
+    },
+    {
+      "id": "FIC-MER",
+      "issuer": "Meridian Payments",
+      "sector": "Financial technology",
+      "value_usd": "128800.00",
+      "weight_pct": "20.10",
+      "change_from_prior_close_usd": "-2800.00",
+      "research_id": "R-MER",
+      "price_date": "2026-09-25"
+    }
+  ],
+  "sectors": [
+    {
+      "sector": "Financial technology",
+      "value_usd": "128800.00",
+      "weight_pct": "20.10"
+    },
+    {
+      "sector": "Healthcare",
+      "value_usd": "160000.00",
+      "weight_pct": "24.97"
+    },
+    {
+      "sector": "Infrastructure",
+      "value_usd": "267000.00",
+      "weight_pct": "41.67"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "S-DOWNSIDE",
+      "name": "Customer spending contraction",
+      "assumption": "Illustrative one-period price shocks selected by the fictional investment team, not a statistical forecast.",
+      "change_usd": "-70232.00",
+      "change_pct": "-10.96",
+      "ending_value_usd": "570568.00"
+    },
+    {
+      "id": "S-UPSIDE",
+      "name": "Enterprise demand expansion",
+      "assumption": "Illustrative one-period price shocks selected by the fictional investment team, not a statistical forecast.",
+      "change_usd": "54088.00",
+      "change_pct": "8.44",
+      "ending_value_usd": "694888.00"
+    }
+  ],
+  "issues": [
+    {
+      "code": "research_stale",
+      "position_id": "FIC-MER",
+      "research_id": "R-MER",
+      "age_days": 138,
+      "severity": "review"
+    }
+  ],
+  "source_sha256": {
+    "fixtures/portfolio.json": "a5609d12826c8a718c740168ee7269d7f89c3ba7ee2d908d2503a36f11654095",
+    "fixtures/research.json": "a9b63a86d0d26cf1f307e5e8a7b9c8a2af5024993beb6c98c135537320287923"
+  },
+  "trade_execution_available": false,
+  "run_id": "2026-09-25-daily",
+  "created_at_utc": "2026-09-26T16:44:16.796363+00:00",
+  "review_decision": "pending",
+  "model_status": "model_final_observed_cli_timeout",
+  "model_error": "TimeoutExpired"
+}

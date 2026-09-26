@@ -1,0 +1,8 @@
+{
+  "model": {"default": "bonsai-ui-public-ternary-bonsai2", "provider": "custom", "base_url": "http://127.0.0.1:5264/v1", "api_key": "local", "api_mode": "chat_completions", "streaming": false, "context_length": 65536},
+  "agent": {"max_turns": 8, "reasoning_effort": "medium"},
+  "platform_toolsets": {"cli": ["ambient_finance"], "cron": ["ambient_finance"]},
+  "mcp_servers": {"ambient_finance": {"command": "python3", "args": ["REPLACED_BY_SETUP"], "tools": {"resources": false, "prompts": false}, "timeout": 30}},
+  "memory": {"memory_enabled": false, "user_profile_enabled": false},
+  "tools": {"tool_search": {"enabled": "off"}}
+}
