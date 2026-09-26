@@ -6,4 +6,4 @@ The [first revised draft](../evidence/acceptance-v2-result.json) corrected the i
 
 Both were manual runs of the September 25 sample work item through local Bonsai and Hermes. The saved records include source hashes, output and elapsed time. They do not establish unattended operation, investment quality or a speedup. The original drafts are preserved for comparison, including the failed result.
 
-Run `python3 -m unittest -v test_finance.py` for the deterministic checks. Twelve tests cover the existing calculations and scheduling behavior, explicit work-item selection, source review requirements and the review command. The model outputs remain development examples rather than held-out validation.
+Run `python3 -m unittest discover -s tests -v` for the deterministic checks. Fourteen tests cover the existing calculations and scheduling behavior, explicit work-item selection, source review requirements and the review command. The model outputs remain development examples rather than held-out validation.

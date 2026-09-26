@@ -12,7 +12,7 @@ The workstation prepares a dated work item for a portfolio manager. Python calcu
 
 `run_schedule.py` writes the work item before invoking Hermes. The prompt names its exact run ID. `finance_latest_run` accepts that ID, and `finance_position` returns a position with its research summary. Omitting the run ID selects the most recently modified work-item file, which is useful for browsing but unsuitable for identifying a particular scheduled task.
 
-Hermes calls the loopback proxy on port 5264. The proxy applies `sampling.json`, forwards the request to Bonsai on port 62737 and saves the full request and response locally. Both tools are read only. The model cannot place a trade or modify the portfolio through them.
+Hermes calls the loopback proxy on port 5264. The proxy applies `config/sampling.json`, forwards the request to Bonsai on port 62737 and saves the full request and response locally. Both tools are read only. The model cannot place a trade or modify the portfolio through them.
 
 The position tool reads the current fixtures rather than an immutable per-run source snapshot. Keep the fixtures unchanged during a run. Versioned snapshots are still needed before supporting concurrent source refresh and analysis.
 

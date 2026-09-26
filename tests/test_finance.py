@@ -10,10 +10,11 @@ from pathlib import Path
 from unittest.mock import patch
 from zoneinfo import ZoneInfo
 
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
 import finance
 import scheduler
-
-ROOT = Path(__file__).resolve().parent
 
 
 class FinanceTests(unittest.TestCase):

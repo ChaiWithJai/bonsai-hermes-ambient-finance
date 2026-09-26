@@ -13,9 +13,9 @@ out = Path(args.out).expanduser().resolve()
 if out.exists():
     raise SystemExit(f"Refusing to overwrite {out}")
 out.mkdir(parents=True)
-config = json.loads((ROOT / "hermes-config.json").read_text())
+config = json.loads((ROOT / "config" / "hermes-config.json").read_text())
 config["mcp_servers"]["ambient_finance"]["command"] = sys.executable
 config["mcp_servers"]["ambient_finance"]["args"] = [str(ROOT / "finance.py")]
 (out / "config.yaml").write_text(json.dumps(config, indent=2) + "\n")
-shutil.copy2(ROOT / "SOUL.md", out / "SOUL.md")
+shutil.copy2(ROOT / "config" / "SOUL.md", out / "SOUL.md")
 print(out)

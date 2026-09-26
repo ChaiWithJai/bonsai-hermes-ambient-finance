@@ -38,7 +38,7 @@ On macOS, `python3 install_launch_agent.py` installs a per-user LaunchAgent that
 
 ## Add the local model and Hermes
 
-Follow the [official Prism runtime instructions](https://github.com/PrismML-Eng/Bonsai-demo) and download [Ternary Bonsai 2 27B GGUF](https://huggingface.co/prism-ml/Ternary-Bonsai-2-27B-gguf). The matching Prism runtime is required for the ternary model. The example uses a 65,536-token context, one server slot, GPU offload, the native tool template and a 512-token reasoning budget. The sampling values in `sampling.json` follow the model card's thinking guidance. The context and response limits are choices for this task.
+Follow the [official Prism runtime instructions](https://github.com/PrismML-Eng/Bonsai-demo) and download [Ternary Bonsai 2 27B GGUF](https://huggingface.co/prism-ml/Ternary-Bonsai-2-27B-gguf). The matching Prism runtime is required for the ternary model. The example uses a 65,536-token context, one server slot, GPU offload, the native tool template and a 512-token reasoning budget. The sampling values in `config/sampling.json` follow the model card's thinking guidance. The context and response limits are choices for this task.
 
 Start the model in one terminal, using the real paths on your computer:
 
@@ -48,7 +48,7 @@ export BONSAI_MODEL=/absolute/path/to/Ternary-Bonsai-2-27B-PQ2_0.gguf
 sh start_model.sh
 ```
 
-Start the request proxy in another terminal with `python3 settings_proxy.py`. It listens on loopback port 5264, forwards to the model on port 62737, applies `sampling.json`, and saves each complete request and response in `exchanges/`. The proxy keeps the entire payload on the local machine and does not redact sensitive input, so use only the fictional fixture for this demo.
+Start the request proxy in another terminal with `python3 settings_proxy.py`. It listens on loopback port 5264, forwards to the model on port 62737, applies `config/sampling.json`, and saves each complete request and response in `exchanges/`. The proxy keeps the entire payload on the local machine and does not redact sensitive input, so choose the input data and retention policy accordingly.
 
 Create a separate Hermes profile under the installed Hermes home. The setup command refuses to overwrite an existing profile:
 
@@ -71,4 +71,4 @@ The review is appended to `runs/2026-09-25-nightly.reviews.jsonl`. The reviewer 
 
 ## Verify the demonstration
 
-Run `python3 -m unittest -v test_finance.py`. The tests check scenario arithmetic, current-price blocking, missing research, incomplete scenario inputs, the schedule, retry behavior, the tool surface and the review gate. The publishable evidence in `evidence/` contains an earlier timed-out daily attempt, a nightly run that completed with a clean Hermes exit, and the first LaunchAgent-triggered daily run that blocked on stale prices without calling Hermes. The nightly session called the two read-only tools, returned a 182-word draft, and passed 14 narrow offline MLflow checks. Read `EVIDENCE.md` before describing these runs; the evaluation is not a live model trace or investment-quality review.
+Run `python3 -m unittest discover -s tests -v`. The tests check scenario arithmetic, current-price blocking, missing research, incomplete scenario inputs, the schedule, retry behavior, the tool surface and the review gate. The publishable evidence in `evidence/` contains an earlier timed-out daily attempt, a nightly run that completed with a clean Hermes exit, and the first LaunchAgent-triggered daily run that blocked on stale prices without calling Hermes. The nightly session called the two read-only tools, returned a 182-word draft, and passed 14 narrow offline MLflow checks. Read `EVIDENCE.md` before describing these runs; the evaluation is not a live model trace or investment-quality review.
