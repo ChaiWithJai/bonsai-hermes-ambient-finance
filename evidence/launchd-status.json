@@ -1,0 +1,12 @@
+{
+  "label": "com.prismml.bonsai-ambient-finance",
+  "installed_on_mac": true,
+  "interval_seconds": 300,
+  "launchctl_runs": 1,
+  "last_exit_code": 0,
+  "first_recorded_run": "2026-09-26-daily",
+  "first_run_status": "blocked",
+  "first_run_model_status": "skipped_data_gate",
+  "data_gate_reason": "September 25 prices are stale for September 26",
+  "model_and_proxy_supervised_by_this_agent": false
+}
