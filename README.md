@@ -14,6 +14,8 @@ First, run `python3 make_mock_sources.py` to generate two fictional PDF analyst 
 
 The sample methodology requires each issuer to stay below 35% of portfolio value, each sector below 60%, cash above 5%, and research to be no older than 90 days. The Meridian Payments note is 138 days old on the sample date, so it remains an open issue for a human reviewer. The work item does not resolve the issue by guessing what the analyst would say.
 
+The [source-reading guide](docs/source-reading.md) shows the recorded page and row citations, a catalog conflict case and the remaining snapshot limitations.
+
 ## Generate a deterministic work item
 
 Run the sample nightly calculation from this directory:
