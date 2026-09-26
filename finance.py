@@ -105,16 +105,47 @@ def calculate(as_of: str, cadence: str) -> dict:
     return {"schema_version": 1, "fictional": True, "as_of": as_of, "cadence": cadence, "methodology": p["methodology"], "status": status, "total_value_usd": money(total), "cash_usd": money(D(p["cash"])), "cash_weight_pct": pct(cash_weight), "daily_change_from_prior_close_usd": money(daily_pnl), "positions": output_positions, "sectors": output_sectors, "scenarios": scenarios, "issues": issues, "source_sha256": file_hashes, "model_analysis": None, "trade_execution_available": False}
 
 
-def latest_run() -> dict:
+def source_review_requirements(run: dict) -> list[str]:
+    reasons = []
+    if run["status"] == "blocked":
+        reasons.append("Source data are blocked. Refresh them before accepting analysis.")
+    if any(issue["severity"] == "review" for issue in run["issues"]):
+        reasons.append("Open limit or research issue. Resolve it before accepting analysis.")
+    return reasons
+
+
+def acceptance_requirements(run: dict) -> dict:
+    reasons = source_review_requirements(run)
+    if run.get("model_status") != "completed":
+        reasons.append("No completed Hermes analysis is available for review.")
+    return {"can_accept_analysis": not reasons, "reasons": reasons,
+            "trade_authorized": False}
+
+
+def work_item_response(run: dict) -> dict:
+    # Draft generation needs portfolio facts, not its own changing execution state.
+    facts = {key: value for key, value in run.items()
+             if not key.startswith("model_") and key != "review_decision"}
+    return {**facts, "source_review_requirements": source_review_requirements(run)}
+
+
+def latest_run(run_id=None) -> dict:
+    if run_id is not None:
+        if not isinstance(run_id, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}-(?:nightly|daily|weekly|quarterly)", run_id):
+            raise ValueError("Use an exact dated run ID")
+        path = RUNS / (run_id + ".json")
+        if not path.exists():
+            raise ValueError("Requested work item does not exist")
+        return work_item_response(json.loads(path.read_text()))
     paths = sorted((path for path in RUNS.glob("*.json") if re.fullmatch(r"\d{4}-\d{2}-\d{2}-(?:nightly|daily|weekly|quarterly)\.json", path.name)), key=lambda x: x.stat().st_mtime, reverse=True)
     if not paths:
         return {"status": "no_run", "message": "Run the local schedule first."}
-    return json.loads(paths[0].read_text())
+    return work_item_response(json.loads(paths[0].read_text()))
 
 
 def execute(name: str, args: dict) -> dict:
     if name == "finance_latest_run":
-        return latest_run()
+        return latest_run(args.get("run_id"))
     if name == "finance_position":
         pid = args.get("position_id")
         p, r = load_fixture()
@@ -131,7 +162,7 @@ def tool(name: str, description: str, props: dict | None = None, required: list[
 
 
 TOOLS = [
-    tool("finance_latest_run", "Read the latest scheduled fictional portfolio analysis and its source IDs, issues and review status."),
+    tool("finance_latest_run", "Read a scheduled portfolio work item. Supply run_id for a specific task; omit it only to browse the latest work item.", {"run_id": {"type": "string"}}),
     tool("finance_position", "Read a fictional position and its analyst source without changing either.", {"position_id": {"type": "string"}}, ["position_id"]),
 ]
 

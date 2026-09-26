@@ -53,8 +53,8 @@ else:
     result["review_decision"] = "pending"
     result["model_status"] = "not_requested"
 if args.with_hermes and result["status"] == "review_required":
-    prompt = (f"Review the latest {args.cadence} fictional finance run {run_id}. "
-              "Call finance_latest_run and finance_position for the largest exposure and the stale-research position. "
+    prompt = (f"Review finance work item {run_id}. "
+              f"Call finance_latest_run with run_id={run_id}, then finance_position for the largest exposure and the stale-research position. "
               "Discuss only those two positions, both assumed scenarios, and the question a human reviewer must resolve. "
               "Cite exact IDs. Write a draft of at most 250 words for a human portfolio manager. "
               "Do not discuss prior model attempts, propose an order, or claim a trade was placed.")

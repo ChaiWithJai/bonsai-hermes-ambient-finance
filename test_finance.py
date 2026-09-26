@@ -17,6 +17,32 @@ ROOT = Path(__file__).resolve().parent
 
 
 class FinanceTests(unittest.TestCase):
+    def test_requested_run_does_not_follow_latest_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "2026-09-25-nightly.json").write_text('{"run_id":"2026-09-25-nightly","status":"review_required","issues":[]}')
+            (root / "2026-09-26-daily.json").write_text('{"run_id":"2026-09-26-daily","status":"review_required","issues":[]}')
+            with patch.object(finance, "RUNS", root):
+                report = finance.execute("finance_latest_run", {"run_id": "2026-09-25-nightly"})
+                self.assertEqual(report["run_id"], "2026-09-25-nightly")
+                with self.assertRaisesRegex(ValueError, "does not exist"):
+                    finance.latest_run("2026-09-24-nightly")
+                with self.assertRaisesRegex(ValueError, "exact dated"):
+                    finance.latest_run("../private")
+
+    def test_tool_exposes_same_acceptance_rule_as_review(self):
+        report = finance.calculate("2026-09-25", "nightly")
+        report["model_status"] = "completed"
+        response = finance.work_item_response(report)
+        self.assertNotIn("model_status", response)
+        self.assertNotIn("model_analysis", response)
+        self.assertIn("Open limit or research issue", response["source_review_requirements"][0])
+        self.assertFalse(finance.acceptance_requirements(report)["can_accept_analysis"])
+        report["issues"] = []
+        self.assertTrue(finance.acceptance_requirements(report)["can_accept_analysis"])
+        report["model_status"] = "failed"
+        self.assertFalse(finance.acceptance_requirements(report)["can_accept_analysis"])
+
     def test_reference_calculation(self):
         report = finance.calculate("2026-09-25", "nightly")
         self.assertEqual(report["total_value_usd"], "640800.00")
@@ -60,7 +86,7 @@ class FinanceTests(unittest.TestCase):
     def test_latest_run_ignores_evaluation_sidecars(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            (root / "2026-09-25-daily.json").write_text('{"run_id":"2026-09-25-daily"}')
+            (root / "2026-09-25-daily.json").write_text('{"run_id":"2026-09-25-daily","status":"review_required","issues":[]}')
             (root / "2026-09-25-daily.eval.json").write_text('{"run_id":"wrong-sidecar"}')
             with patch.object(finance, "RUNS", root):
                 self.assertEqual(finance.latest_run()["run_id"], "2026-09-25-daily")

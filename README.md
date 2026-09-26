@@ -2,13 +2,15 @@
 
 The local job reviews a fictional investment portfolio while the team is away. It calculates position and sector weights, applies two stated scenario shocks, checks research age and saves a draft for human review. Hermes can use Ternary Bonsai 2 27B to explain the work item through two read-only tools. The supplied tools cannot place trades or update the portfolio.
 
+The [architecture](docs/architecture.md) explains the source data, calculation, model tools, persistence and service dependencies.
+
 The [public reproduction guide](https://gist.github.com/ChaiWithJai/e53e6e13fcecb0946643c02497419b81) gives the short command sequence, including the retry needed to request a model draft after the deterministic nightly run.
 
 The included prices, issuers, analyst notes and methodology are invented. The sample date is September 25, 2026, and a run for a later date will be blocked until the price data are refreshed. Scenario outcomes are arithmetic results under assumed price changes. They are not forecasts, backtests or evidence of investment returns.
 
 ## Review the source data
 
-First, run `python3 make_mock_sources.py` to generate two fictional PDF analyst notes and two fictional CSV models. The portfolio positions, prices, scenario shocks and risk limits are in `fixtures/portfolio.json`. The report index in `fixtures/research.json` points to the generated files. The nightly job records SHA-256 hashes of the JSON fixtures and stops approval if a report file is missing.
+First, run `python3 make_mock_sources.py` to generate two fictional PDF analyst notes and two fictional CSV models. The portfolio positions, prices, scenario shocks and risk limits are in `fixtures/portfolio.json`. The report index in `fixtures/research.json` supplies the summaries read by the tools and points to the generated files. The current tools check those files exist; they do not extract their text. The nightly job records SHA-256 hashes of the JSON fixtures and stops approval if a report file is missing.
 
 The sample methodology requires each issuer to stay below 35% of portfolio value, each sector below 60%, cash above 5%, and research to be no older than 90 days. The Meridian Payments note is 138 days old on the sample date, so it remains an open issue for a human reviewer. The work item does not resolve the issue by guessing what the analyst would say.
 
@@ -53,7 +55,7 @@ python3 setup.py --out "$HOME/.hermes/profiles/ambient-finance-demo"
 hermes --profile ambient-finance-demo chat --oneshot -Q --run-budget 150 -q "Read the latest fictional portfolio run and explain the open review issue."
 ```
 
-To generate a scheduled work item and request an analyst draft in one command, run `python3 run_schedule.py --cadence nightly --as-of 2026-09-25 --with-hermes`. Choose a new date or cadence if the sample run file already exists. The script saves the deterministic calculation before calling Hermes so that the agent can read it. The full answer is saved as `model_analysis` only when Hermes exits successfully. The exit code by itself does not establish that the prose is factually correct, so the human review remains necessary.
+To generate a scheduled work item and request an analyst draft in one command, run `python3 run_schedule.py --cadence nightly --as-of 2026-09-25 --with-hermes`. If you followed the deterministic calculation above, use `python3 run_schedule.py --cadence nightly --as-of 2026-09-25 --retry-model --with-hermes` to add the model draft to that same work item. The wrapper preserves the earlier record in `runs/attempts/`. A completed model draft cannot be retried with this command. Do not advance the sample date to bypass an existing file, because the supplied prices are valid only for September 25. The script saves the deterministic calculation before calling Hermes so that the agent can read it. The full answer is saved as `model_analysis` only when Hermes exits successfully. The exit code by itself does not establish that the prose is factually correct, so the human review remains necessary.
 
 ## Review a work item
 
