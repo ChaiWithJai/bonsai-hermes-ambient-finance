@@ -107,6 +107,26 @@ class FinanceTests(unittest.TestCase):
                 result = scheduler.tick(datetime(2026, 9, 25, 9, tzinfo=ZoneInfo("America/New_York")), dry_run=True)
             self.assertEqual(result, [{"cadence": "daily", "status": "already_recorded"}])
 
+    def test_schedule_waits_for_model_then_runs_without_losing_item(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            now = datetime(2026, 9, 25, 9, tzinfo=ZoneInfo("America/New_York"))
+            with patch.object(scheduler, "ROOT", Path(tmp)), patch.object(scheduler, "model_ready", side_effect=[False, True]), patch.object(scheduler.subprocess, "run") as run:
+                run.return_value = subprocess.CompletedProcess([], 0, "saved", "")
+                self.assertEqual(scheduler.tick(now)[0]["status"], "waiting_for_model")
+                run.assert_not_called()
+                self.assertFalse((Path(tmp) / "runs/2026-09-25-daily.json").exists())
+                self.assertEqual(scheduler.tick(now)[0]["status"], "recorded")
+                run.assert_called_once()
+
+    def test_stale_data_is_recorded_even_without_model(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            now = datetime(2026, 9, 26, 9, tzinfo=ZoneInfo("America/New_York"))
+            with patch.object(scheduler, "ROOT", Path(tmp)), patch.object(scheduler, "model_ready") as ready, patch.object(scheduler.subprocess, "run") as run:
+                run.return_value = subprocess.CompletedProcess([], 0, "blocked", "")
+                self.assertEqual(scheduler.tick(now)[0]["status"], "recorded")
+                ready.assert_not_called()
+                run.assert_called_once()
+
     def test_retry_does_not_feed_prior_draft_to_model(self):
         with tempfile.TemporaryDirectory() as tmp:
             base = Path(tmp)

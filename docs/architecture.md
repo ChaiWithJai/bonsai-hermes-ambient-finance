@@ -27,3 +27,9 @@ The work-item response exposes `source_review_requirements`, sharing its source 
 The scheduler checks daily, nightly, weekly and quarterly periods in America/New_York. The macOS installer starts that scheduler at login and every five minutes. It does not start or supervise Bonsai or the request proxy, and missed dates are not backfilled. Continuous operation therefore requires service supervision and a fresh source feed beyond the current installer.
 
 Full model exchanges remain on disk and can contain the supplied portfolio data. Keep access to the workstation and its evidence directories consistent with the data's permissions. MLflow's current evaluator records checks of captured results; it is separate from online model tracing.
+
+## Model startup and queued work
+
+Before creating an eligible work item, the scheduler checks the configured proxy for the expected model ID. If the endpoint is unavailable, it reports `waiting_for_model` and leaves the item uncreated so the next scheduled pass can try again. A data-blocked item is recorded without requiring the model. The check does not generate tokens.
+
+The readiness check covers startup ordering, but cannot guarantee the model stays available during generation. A failure after the check is preserved in the work item and requires the documented `--retry-model` command. A successful readiness response does not prove inference capacity or recovery after a workstation restart.

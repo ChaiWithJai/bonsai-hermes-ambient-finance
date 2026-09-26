@@ -2,6 +2,10 @@
 from __future__ import annotations
 
 import argparse
+import json
+import urllib.request
+
+from finance import calculate
 import subprocess
 import sys
 import time
@@ -39,6 +43,17 @@ def due(now: datetime) -> list[str]:
     return result
 
 
+def model_ready() -> bool:
+    """Check the configured proxy and model without issuing an inference request."""
+    config = json.loads((ROOT / "config/hermes-config.json").read_text())["model"]
+    try:
+        with urllib.request.urlopen(config["base_url"].rstrip("/") + "/models", timeout=5) as response:
+            models = json.load(response).get("data", [])
+        return any(item.get("id") == config["default"] for item in models)
+    except (OSError, ValueError, TypeError, AttributeError):
+        return False
+
+
 def tick(now: datetime, dry_run: bool = False) -> list[dict]:
     local = now.astimezone(TZ)
     output = []
@@ -50,6 +65,10 @@ def tick(now: datetime, dry_run: bool = False) -> list[dict]:
             continue
         if dry_run:
             output.append({"cadence": cadence, "status": "would_run"})
+            continue
+        report = calculate(local.date().isoformat(), cadence)
+        if report["status"] == "review_required" and not model_ready():
+            output.append({"cadence": cadence, "status": "waiting_for_model"})
             continue
         result = subprocess.run([sys.executable, str(ROOT / "run_schedule.py"), "--cadence", cadence, "--as-of", local.date().isoformat(), "--with-hermes"], capture_output=True, text=True)
         output.append({"cadence": cadence, "status": "recorded" if result.returncode == 0 else "failed", "detail": result.stdout.strip() if result.returncode == 0 else result.stderr.strip()})
