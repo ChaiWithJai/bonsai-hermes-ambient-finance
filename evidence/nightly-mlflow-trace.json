@@ -1,0 +1,9 @@
+{
+  "run_id": "2026-09-25-nightly",
+  "trace_id": "tr-fcf4010454b4b66c0b27302cd8752ce7",
+  "experiment_id": "42",
+  "trace_status": "OK",
+  "passed": true,
+  "check_count": 14,
+  "scope": "Offline checks on the captured model draft and recorded CLI exit. This trace is not an online model trace or investment-quality evaluation."
+}

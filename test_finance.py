@@ -80,6 +80,34 @@ class FinanceTests(unittest.TestCase):
                 result = scheduler.tick(datetime(2026, 9, 25, 9, tzinfo=ZoneInfo("America/New_York")), dry_run=True)
             self.assertEqual(result, [{"cadence": "daily", "status": "already_recorded"}])
 
+    def test_retry_does_not_feed_prior_draft_to_model(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            run = finance.calculate("2026-09-25", "daily")
+            run.update(run_id="2026-09-25-daily", model_status="failed",
+                       model_analysis="obsolete timeout claim", model_error="TimeoutExpired")
+            (base / "2026-09-25-daily.json").write_text(json.dumps(run))
+            binary = base / "hermes"
+            binary.write_text("#!/usr/bin/env python3\n"
+                              "import json,os,pathlib,sys\n"
+                              "p=pathlib.Path(os.environ['AMBIENT_FINANCE_RUNS'])/'2026-09-25-daily.json'\n"
+                              "r=json.loads(p.read_text())\n"
+                              "if r.get('model_analysis') is not None or r['model_status']!='pending': sys.exit(7)\n"
+                              "print('Fresh fictional draft')\n")
+            binary.chmod(0o755)
+            env = {**os.environ, "AMBIENT_FINANCE_RUNS": tmp,
+                   "PATH": str(base) + os.pathsep + os.environ["PATH"]}
+            proc = subprocess.run([sys.executable, str(ROOT / "run_schedule.py"), "--cadence", "daily",
+                                   "--as-of", "2026-09-25", "--retry-model", "--with-hermes"],
+                                  capture_output=True, text=True, env=env)
+            self.assertEqual(proc.returncode, 0, proc.stderr)
+            after = json.loads((base / "2026-09-25-daily.json").read_text())
+            self.assertEqual(after["model_status"], "completed")
+            self.assertEqual(after["model_analysis"], "Fresh fictional draft")
+            archived = list((base / "attempts").glob("*.json"))
+            self.assertEqual(len(archived), 1)
+            self.assertEqual(json.loads(archived[0].read_text())["model_analysis"], "obsolete timeout claim")
+
     def test_review_gate_rejects_stale_research_acceptance(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "2026-09-25-nightly.json"

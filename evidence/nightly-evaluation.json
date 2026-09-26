@@ -1,0 +1,21 @@
+{
+  "run_id": "2026-09-25-nightly",
+  "checks": {
+    "model_final_observed": true,
+    "fictional_scope": true,
+    "largest_position_id": true,
+    "stale_research_id": true,
+    "stale_research_age": true,
+    "downside_scenario_id": true,
+    "upside_scenario_id": true,
+    "portfolio_value": true,
+    "downside_amount": true,
+    "upside_amount": true,
+    "no_execution_claim": true,
+    "clean_cli_return": true,
+    "draft_under_250_words": true,
+    "no_obsolete_timeout_claim": true
+  },
+  "passed": true,
+  "scope": "Draft coverage and simple false-claim checks only. Human investment review remains required."
+}

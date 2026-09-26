@@ -24,6 +24,9 @@ def evaluate(run: dict) -> dict:
         "downside_amount": "70232" in normalized,
         "upside_amount": "54088" in normalized,
         "no_execution_claim": not bool(re.search(r"\b(?:placed|executed|submitted)\s+(?:a\s+)?(?:trade|order)\b", normalized)),
+        "clean_cli_return": run.get("model_status") == "completed" and run.get("model_exit_code") == 0,
+        "draft_under_250_words": len(draft.split()) <= 250,
+        "no_obsolete_timeout_claim": "model_final_observed_cli_timeout" not in normalized and "cli timed out" not in normalized,
     }
     return {"run_id": run["run_id"], "checks": checks, "passed": all(checks.values()), "scope": "Draft coverage and simple false-claim checks only. Human investment review remains required."}
 

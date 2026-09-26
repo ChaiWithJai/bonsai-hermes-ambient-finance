@@ -1,0 +1,25 @@
+{
+  "session_id": "20260926_140712_c09d15",
+  "model": "bonsai-ui-public-ternary-bonsai2",
+  "run_id": "2026-09-25-nightly",
+  "prompt": "Review the latest nightly fictional finance run 2026-09-25-nightly. Call finance_latest_run and finance_position for the largest exposure and the stale-research position. Discuss only those two positions, both assumed scenarios, and the question a human reviewer must resolve. Cite exact IDs. Write a draft of at most 250 words for a human portfolio manager. Do not discuss prior model attempts, propose an order, or claim a trade was placed.",
+  "tool_calls": [
+    {
+      "name": "mcp__ambient_finance__finance_latest_run",
+      "result_sha256": "c3f383ba9f630a83dcf2f0b1448638856220d0571a9e97932e576b10c0314ae6"
+    },
+    {
+      "name": "mcp__ambient_finance__finance_position",
+      "result_sha256": "dc7b3175b281bddeb45deba2c74a9be908eb706e368e04db8d0beec0da37d005"
+    },
+    {
+      "name": "mcp__ambient_finance__finance_position",
+      "result_sha256": "d417936dcf6c9fe4a9bde8c2096e68cc54b3ac43d2a119cafffd392d5c70e7a5"
+    }
+  ],
+  "final_answer": "Fictional demo scope: all issuers, prices, reports, scenarios, and people below are invented. This draft is for the human portfolio manager.\n\nPortfolio value 2026-09-25: $640,800. Cash 13.26%. Largest exposure: Helix Health (FIC-HEL), $160,000, 24.97% weight, close $64 vs $63 prior, +$2,500, price 2026-09-25, research R-HEL (2026-08-28, Mira Chen). Thesis: clinic adoption could grow if integration costs stay low; risk: reimbursement policy may delay deployments.\n\nStale-research position: Meridian Payments (FIC-MER), $128,800, 20.10% weight, close $92 vs $94 prior, -$2,800, price 2026-09-25, research R-MER (2026-05-10, Owen Patel) at 138 days age, flagged \"research_stale\" (run 2026-09-25-nightly). Thesis: transaction volume could rise with merchant additions; risk: research older than the 90-day review limit.\n\nAssumed scenarios (illustrative one-period fictional shocks, not forecasts):\n- S-DOWNSIDE \"Customer spending contraction\": -10.96%, -$70,232, ending value $570,568.\n- S-UPSIDE \"Enterprise demand expansion\": +8.44%, +$54,088, ending value $694,888.\n\nQuestion for the reviewer: R-MER is 138 days old, beyond the 90-day limit; must you accept it as valid input for the 2026-09-25-nightly review, or reject it until refreshed? No trade was placed; no order is proposed.\n\nWord count check: this is under 250 words.",
+  "model_status": "completed",
+  "model_exit_code": 0,
+  "model_elapsed_seconds": 56.9,
+  "scope": "Local Hermes CLI to Bonsai through loopback proxy; fictional fixture; no Slack, Google API, or trade execution"
+}

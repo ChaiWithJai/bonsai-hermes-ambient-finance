@@ -25,6 +25,6 @@ def traced_review(run_id: str) -> dict:
 result = traced_review(args.run_id)
 trace_id = mlflow.get_last_active_trace_id()
 observed = mlflow.get_trace(trace_id, flush=True)
-record = {"run_id": args.run_id, "trace_id": trace_id, "experiment_id": observed.info.experiment_id, "trace_status": observed.info.status.value, "passed": result["passed"], "scope": "Offline checks on the captured model draft. This trace does not claim a completed Hermes CLI process or online trade evaluation."}
+record = {"run_id": args.run_id, "trace_id": trace_id, "experiment_id": observed.info.experiment_id, "trace_status": observed.info.status.value, "passed": result["passed"], "check_count": len(result["checks"]), "scope": "Offline checks on the captured model draft and recorded CLI exit. This trace is not an online model trace or investment-quality evaluation."}
 (RUNS / f"{args.run_id}.mlflow.json").write_text(json.dumps(record, indent=2) + "\n")
 print(json.dumps(record))

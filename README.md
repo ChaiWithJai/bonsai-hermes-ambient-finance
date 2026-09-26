@@ -20,7 +20,7 @@ Run the sample nightly calculation from this directory:
 python3 run_schedule.py --cadence nightly --as-of 2026-09-25
 ```
 
-The command writes `runs/2026-09-25-nightly.json`. It refuses to overwrite the file on a scheduled retry, which keeps the original source hashes and calculation intact. A failed model draft can be retried with `--retry-model --with-hermes` when the source hashes are unchanged. The expected portfolio value is $640,800, with a $300 change from the listed prior closes. The downside scenario is a $70,232 loss under its assumed shocks. The report status is `review_required` because the Meridian note is stale.
+The command writes `runs/2026-09-25-nightly.json`. It refuses to overwrite the file on a scheduled retry, which keeps the original source hashes and calculation intact. A failed model draft can be retried with `--retry-model --with-hermes` when the source hashes are unchanged. The wrapper archives the prior attempt and removes its draft from the tool-readable work item before asking Hermes again. The expected portfolio value is $640,800, with a $300 change from the listed prior closes. The downside scenario is a $70,232 loss under its assumed shocks. The report status is `review_required` because the Meridian note is stale.
 
 The scheduler supports nightly, daily, weekly and quarterly checks. It uses the America/New_York clock. The following dry run prints the periods that would be due at a chosen time without creating a report:
 
@@ -65,4 +65,4 @@ The review is appended to `runs/2026-09-25-nightly.reviews.jsonl`. The reviewer 
 
 ## Verify the demonstration
 
-Run `python3 -m unittest -v test_finance.py`. The tests check scenario arithmetic, current-price blocking, missing research, incomplete scenario inputs, the schedule, retry behavior, the tool surface and the review gate. The publishable evidence in `evidence/` contains a captured Bonsai draft, deterministic draft checks and the ID of an offline MLflow evaluation trace. Read `EVIDENCE.md` before describing the live run, because Hermes timed out after the model produced its final response.
+Run `python3 -m unittest -v test_finance.py`. The tests check scenario arithmetic, current-price blocking, missing research, incomplete scenario inputs, the schedule, retry behavior, the tool surface and the review gate. The publishable evidence in `evidence/` contains both an earlier timed-out daily attempt and a later nightly run that completed with a clean Hermes exit. The nightly session called the two read-only tools, returned a 182-word draft, and passed 14 narrow offline MLflow checks. Read `EVIDENCE.md` before describing either run; the evaluation is not a live model trace or investment-quality review.
