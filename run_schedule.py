@@ -58,7 +58,8 @@ else:
 if args.with_hermes and result["status"] == "review_required":
     prompt = (f"Review finance work item {run_id}. "
               f"Call finance_latest_run with run_id={run_id}, then finance_position for the largest exposure and the stale-research position. "
-              "Discuss only those two positions, both assumed scenarios, and the question a human reviewer must resolve. "
+              "Discuss only those two positions, both assumed scenarios, and the next_decision in review_context. "
+              "If acceptance_blocked_by_sources is true, ask who will obtain the named research updates; do not offer an acceptance exception. "
               "Cite exact IDs. Write a draft of at most 250 words for a human portfolio manager. "
               "Do not discuss prior model attempts, propose an order, or claim a trade was placed.")
     run_budget = max(30, args.model_timeout - 60)

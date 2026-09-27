@@ -37,9 +37,17 @@ class FinanceTests(unittest.TestCase):
         response = finance.work_item_response(report)
         self.assertNotIn("model_status", response)
         self.assertNotIn("model_analysis", response)
+        context = response["review_context"]
+        self.assertTrue(context["acceptance_blocked_by_sources"])
+        self.assertFalse(context["source_exception_available"])
+        self.assertEqual(context["required_research_actions"][0]["research_id"], "R-MER")
+        self.assertEqual(context["required_research_actions"][0]["position_id"], "FIC-MER")
         self.assertIn("Open limit or research issue", response["source_review_requirements"][0])
         self.assertFalse(finance.acceptance_requirements(report)["can_accept_analysis"])
         report["issues"] = []
+        clear = finance.work_item_response(report)["review_context"]
+        self.assertFalse(clear["acceptance_blocked_by_sources"])
+        self.assertEqual(clear["required_research_actions"], [])
         self.assertTrue(finance.acceptance_requirements(report)["can_accept_analysis"])
         report["model_status"] = "failed"
         self.assertFalse(finance.acceptance_requirements(report)["can_accept_analysis"])

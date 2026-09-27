@@ -130,7 +130,24 @@ def work_item_response(run: dict) -> dict:
     # Draft generation needs portfolio facts, not its own changing execution state.
     facts = {key: value for key, value in run.items()
              if not key.startswith("model_") and key != "review_decision"}
-    return {**facts, "source_review_requirements": source_review_requirements(run)}
+    requirements = source_review_requirements(run)
+    research_actions = [
+        {"action": "refresh_research", "position_id": issue["position_id"],
+         "research_id": issue["research_id"],
+         "reason": "The research exceeds the review age limit. Obtain a current report before acceptance."}
+        for issue in run["issues"] if issue["code"] == "research_stale"
+    ]
+    return {**facts, "source_review_requirements": requirements,
+            "review_context": {
+                "acceptance_blocked_by_sources": bool(requirements),
+                "source_requirements": requirements,
+                "required_research_actions": research_actions,
+                "source_exception_available": False,
+                "next_decision": (
+                    "Determine who will obtain the required source updates. Acceptance is unavailable until the source issues are resolved."
+                    if requirements else
+                    "Review the completed draft for accuracy before recording an acceptance decision."),
+            }}
 
 
 def latest_run(run_id=None) -> dict:
