@@ -16,6 +16,7 @@ from pathlib import Path
 from finance import ROOT, RUNS, calculate
 from lib.hermes_result import cursor, final_answer
 from lib.work_item import can_refresh
+from lib.owned_process import run as run_owned
 
 def write_report(path: Path, report: dict):
     with tempfile.NamedTemporaryFile("w", dir=path.parent, prefix=".report-", delete=False) as pending:
@@ -112,7 +113,7 @@ if args.with_hermes and result["status"] == "review_required":
     before_message = cursor(session_db)
     started = time.monotonic()
     try:
-        proc = subprocess.run(command, capture_output=True, text=True, timeout=args.model_timeout, env=os.environ.copy())
+        proc = run_owned(command, timeout=args.model_timeout, env=os.environ.copy())
         result["model_status"] = "completed" if proc.returncode == 0 else "failed"
         result["model_analysis"] = None
         result["model_exit_code"] = proc.returncode

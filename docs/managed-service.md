@@ -42,3 +42,5 @@ tail -n 20 "$HOME/Library/Logs/PrismML/ambient-finance.err.log"
 ```
 
 Stop the job with `launchctl bootout gui/$(id -u)/com.prismml.bonsai-ambient-finance`. The scheduler does not refresh source data or backfill missed dates. The default installer mode still expects an independently managed model; pass the managed model options to enable owned startup and cleanup.
+
+On SIGTERM or a worker timeout, the scheduler stops the process groups it created before releasing the work-item lock. An interrupted report remains eligible for the existing bounded retry when its source inputs are unchanged. Process tests cover child and nested-worker termination; a machine reboot and sustained unattended operation have not been verified.

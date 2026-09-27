@@ -78,7 +78,7 @@ class SourceRefreshTests(unittest.TestCase):
             self.assertTrue(managed_tick.needs_model(self.now))
             with patch.object(scheduler, 'model_ready', return_value=False):
                 self.assertEqual(scheduler.tick(self.now)[0]['status'], 'waiting_for_model')
-            with patch.object(scheduler, 'model_ready', return_value=True), patch.object(scheduler.subprocess, 'run', return_value=Mock(returncode=0, stdout='recorded', stderr='')) as launch:
+            with patch.object(scheduler, 'model_ready', return_value=True), patch.object(scheduler, 'run_owned', return_value=Mock(returncode=0, stdout='recorded', stderr='')) as launch:
                 self.assertEqual(scheduler.tick(self.now)[0]['status'], 'recorded')
                 self.assertIn('--refresh-blocked', launch.call_args.args[0])
                 self.assertIn('--with-hermes', launch.call_args.args[0])
@@ -86,6 +86,6 @@ class SourceRefreshTests(unittest.TestCase):
             saved.update(status='review_required', model_status='completed')
             self.path.write_text(json.dumps(saved))
             self.assertFalse(managed_tick.needs_model(self.now))
-            with patch.object(scheduler.subprocess, 'run') as launch:
+            with patch.object(scheduler, 'run_owned') as launch:
                 self.assertEqual(scheduler.tick(self.now)[0]['status'], 'already_recorded')
                 launch.assert_not_called()
