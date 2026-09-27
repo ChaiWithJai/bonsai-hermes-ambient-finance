@@ -95,3 +95,16 @@ class ManagedTickTests(unittest.TestCase):
             current = f'{os.getpid()} python managed_tick.py --runtime /bin/llama-server'
             other = '999999 /bin/llama-server --model /weights'
             self.assertEqual(adapter.blocking_processes(current + '\n' + other), [other])
+
+    def test_sample_generator_is_explicit_and_leaves_sources_unchanged(self):
+        from scripts.create_sample_inputs import create
+        original = (managed.ROOT / 'fixtures/portfolio.json').read_bytes()
+        with tempfile.TemporaryDirectory() as tmp:
+            destination = Path(tmp) / 'data'
+            create(destination, '2026-10-01')
+            sample = json.loads((destination / 'fixtures/portfolio.json').read_text())
+            self.assertTrue(all(p['price_date'] == '2026-10-01' for p in sample['positions']))
+            self.assertIn('mocked', sample['sample_provenance'])
+            self.assertEqual((managed.ROOT / 'fixtures/portfolio.json').read_bytes(), original)
+            with self.assertRaises(FileExistsError):
+                create(destination, '2026-10-02')

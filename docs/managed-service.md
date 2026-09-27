@@ -10,6 +10,14 @@ export AMBIENT_FINANCE_RUNS="$HOME/.local/state/bonsai-ambient-finance/runs"
 python3 setup.py --out "$HOME/.hermes/profiles/ambient-finance-demo"
 ```
 
+For a lifecycle demonstration using sample data, create a separate dated input directory before setup. Choose the date explicitly; the generator copies the sample values and records that they are mocked prices. It does not run as part of the scheduler or update the date automatically.
+
+```sh
+python3 scripts/create_sample_inputs.py --out "$HOME/.local/state/bonsai-ambient-finance/sample-inputs" --as-of YYYY-MM-DD
+```
+
+Set `AMBIENT_FINANCE_DATA` to that directory before creating the profile. On the next date, the same sample prices will be stale and inference will be skipped.
+
 Second, install the managed scheduler on a workstation dedicated to the demo. Use the downloaded model and matching Prism runtime paths.
 
 ```sh

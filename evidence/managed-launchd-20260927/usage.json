@@ -1,0 +1,77 @@
+{
+  "attempts": [
+    {
+      "prompt_tokens": 2906,
+      "completion_tokens": 74,
+      "total_tokens": 2980,
+      "cached_tokens": 0,
+      "exchange": "9d06f98d4ac743a59e771c2bce3b33ef.json",
+      "phase": "original",
+      "status": 200,
+      "finish_reason": "tool_calls",
+      "content_characters": 0,
+      "reasoning_characters": 72,
+      "usage_available": true
+    },
+    {
+      "prompt_tokens": 4542,
+      "completion_tokens": 134,
+      "total_tokens": 4676,
+      "cached_tokens": 2902,
+      "exchange": "fe3302ea87c0452aa74941d5b787e210.json",
+      "phase": "original",
+      "status": 200,
+      "finish_reason": "tool_calls",
+      "content_characters": 0,
+      "reasoning_characters": 212,
+      "usage_available": true
+    },
+    {
+      "prompt_tokens": 5635,
+      "completion_tokens": 559,
+      "total_tokens": 6194,
+      "cached_tokens": 4538,
+      "exchange": "e4caf10896904c4eb95bb69ae9eedec3.json",
+      "phase": "original",
+      "status": 200,
+      "finish_reason": "tool_calls",
+      "content_characters": 0,
+      "reasoning_characters": 1271,
+      "usage_available": true
+    },
+    {
+      "prompt_tokens": 7271,
+      "completion_tokens": 1536,
+      "total_tokens": 8807,
+      "cached_tokens": 5631,
+      "exchange": "c0bb315b26cf4666839e34cfb6037057.json",
+      "phase": "original",
+      "status": 200,
+      "finish_reason": "length",
+      "content_characters": 3078,
+      "reasoning_characters": 1565,
+      "usage_available": true
+    },
+    {
+      "prompt_tokens": 8342,
+      "completion_tokens": 889,
+      "total_tokens": 9231,
+      "cached_tokens": 7267,
+      "exchange": "fd4246121cb64608873e63673dc0d054.json",
+      "phase": "original",
+      "status": 200,
+      "finish_reason": "stop",
+      "content_characters": 1303,
+      "reasoning_characters": 2415,
+      "usage_available": true
+    }
+  ],
+  "aggregate": {
+    "prompt_tokens": 28696,
+    "completion_tokens": 3192,
+    "total_tokens": 31888,
+    "cached_tokens": 20338
+  },
+  "corrective_attempts": 0,
+  "scope": "All captured upstream calls, including output-limit continuation; not an isolated performance benchmark"
+}

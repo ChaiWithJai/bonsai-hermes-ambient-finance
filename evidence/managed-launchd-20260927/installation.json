@@ -1,0 +1,13 @@
+{
+  "canonical_installed": true,
+  "temporary_job_unloaded": true,
+  "prior_plist_backed_up": true,
+  "completed_work_item_unchanged_after_install": true,
+  "start_interval_seconds": 300,
+  "exit_timeout_seconds": 60,
+  "sample_prices_date": "2026-09-26",
+  "automatic_source_refresh": false,
+  "requires_logged_in_awake_mac": true,
+  "reboot_tested": false,
+  "next_date_source_gate_verified": true
+}

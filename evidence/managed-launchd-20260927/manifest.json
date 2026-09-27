@@ -1,0 +1,17 @@
+{
+  "queue_job": "ambient-scheduled-b4c647ee44724bd2a72098f88505773c",
+  "files": {
+    "managed_tick.py": "7a2e418e495c0de5c5d2d44fe3e3767cd662d7e5a6397e9c364e4fa276354af3",
+    "scheduler.py": "0ddabc1b25fecf7419188de42717dfdf85e90f7c136877d2868398f31bc5c96b",
+    "run_schedule.py": "c6e8b07ad393523c4d2d71ebe53ec0276778e53226aee6dddf4706181066d191",
+    "finance.py": "cac997c74c29b4f0497e285107434f6f993a042f3da696ecc24a9ac93ecf051c",
+    "config/SOUL.md": "8c9030d29f0f3324df2a8639c4d9a5b25fe12db019e9ba938b9a20417a74fefb",
+    "config/sampling.json": "af76223d9c54036da433160229981200b426710f33b7b1048d76c83d1b0fd6b5",
+    "settings_proxy.py": "3539db7172c4928934878c007af3b1b5b887bcfe1765efa59ac500fd016328a7",
+    "lib/final_response.py": "8d04ec27aa7ac2970675bac6df3a2e2102c2bd6d37678a85303cf4d4766e2131"
+  },
+  "owned_model_pid": 20407,
+  "owned_proxy_pid": 20408,
+  "owned_ports_closed_after_job": true,
+  "first_probe_failure_preserved": true
+}
