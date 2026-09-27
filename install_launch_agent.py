@@ -38,6 +38,7 @@ def config(python: Path, managed_args: list[str] | None = None, profile: str = "
         "WorkingDirectory": str(ROOT),
         "RunAtLoad": True,
         "StartInterval": 300,
+        "ExitTimeOut": 60,
         "EnvironmentVariables": environment,
         "StandardOutPath": str(LOGS / "ambient-finance.out.log"),
         "StandardErrorPath": str(LOGS / "ambient-finance.err.log"),

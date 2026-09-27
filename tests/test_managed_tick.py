@@ -86,3 +86,12 @@ class ManagedTickTests(unittest.TestCase):
             with patch.object(install_launch_agent.shutil, 'which', return_value='/bin/hermes'):
                 agent = install_launch_agent.config(Path('/python'))
             self.assertEqual(agent['EnvironmentVariables']['AMBIENT_FINANCE_DATA'], tmp)
+
+    def test_queue_scan_ignores_only_wrapper_pid(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            module = Path(tmp) / 'queue.py'
+            module.write_text('def blocking_processes(text): return text.splitlines()\n')
+            adapter = managed.load_queue(module)
+            current = f'{os.getpid()} python managed_tick.py --runtime /bin/llama-server'
+            other = '999999 /bin/llama-server --model /weights'
+            self.assertEqual(adapter.blocking_processes(current + '\n' + other), [other])

@@ -46,6 +46,11 @@ def load_queue(path):
     spec = importlib.util.spec_from_file_location('ambient_gpu_queue', path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
+    # The queue scans command arguments, so our --runtime llama-server path can
+    # look like a running server. Exclude only this wrapper PID, never its children.
+    scanner = module.blocking_processes
+    module.blocking_processes = lambda text: [line for line in scanner(text)
+        if line.split(maxsplit=1)[0] != str(os.getpid())]
     return module
 
 
