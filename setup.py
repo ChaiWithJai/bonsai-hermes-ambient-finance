@@ -17,10 +17,10 @@ out.mkdir(parents=True)
 config = json.loads((ROOT / "config" / "hermes-config.json").read_text())
 config["mcp_servers"]["ambient_finance"]["command"] = sys.executable
 config["mcp_servers"]["ambient_finance"]["args"] = [str(ROOT / "finance.py")]
-if os.environ.get("AMBIENT_FINANCE_RUNS"):
-    config["mcp_servers"]["ambient_finance"]["env"] = {
-        "AMBIENT_FINANCE_RUNS": str(Path(os.environ["AMBIENT_FINANCE_RUNS"]).expanduser().absolute())
-    }
+environment = {name: str(Path(os.environ[name]).expanduser().absolute())
+               for name in ("AMBIENT_FINANCE_RUNS", "AMBIENT_FINANCE_DATA") if os.environ.get(name)}
+if environment:
+    config["mcp_servers"]["ambient_finance"]["env"] = environment
 (out / "config.yaml").write_text(json.dumps(config, indent=2) + "\n")
 shutil.copy2(ROOT / "config" / "SOUL.md", out / "SOUL.md")
 print(out)

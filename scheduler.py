@@ -63,7 +63,7 @@ def tick(now: datetime, dry_run: bool = False, profile: str = "ambient-finance-d
         retry = False
         if path.exists():
             saved = json.loads(path.read_text())
-            retry = saved.get("status") == "review_required" and saved.get("model_status") == "failed"
+            retry = saved.get("status") == "review_required" and saved.get("model_status") in ("failed", "running")
             attempts = list((RUNS / "attempts").glob(f"{run_id}-*.json"))
             if not retry or len(attempts) >= 2:
                 output.append({"cadence": cadence, "status": "retry_limit_reached" if retry else "already_recorded"})

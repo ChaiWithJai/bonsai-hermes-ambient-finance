@@ -28,9 +28,13 @@ def pct(value: Decimal) -> str:
     return str((value * 100).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
 
 
+def data_root() -> Path:
+    return Path(os.environ.get("AMBIENT_FINANCE_DATA", str(ROOT))).expanduser().absolute()
+
+
 def load_fixture() -> tuple[dict, dict]:
-    portfolio = json.loads((ROOT / "fixtures/portfolio.json").read_text())
-    research = json.loads((ROOT / "fixtures/research.json").read_text())
+    portfolio = json.loads((data_root() / "fixtures/portfolio.json").read_text())
+    research = json.loads((data_root() / "fixtures/research.json").read_text())
     assert portfolio["fictional"] and research["fictional"]
     return portfolio, research
 
@@ -75,7 +79,7 @@ def calculate(as_of: str, cadence: str) -> dict:
                 issues.append({"code": "research_future_dated", "position_id": pid, "severity": "block"})
             elif age > int(limits["max_research_age_days"]):
                 issues.append({"code": "research_stale", "position_id": pid, "research_id": report["id"], "age_days": age, "severity": "review"})
-            if not (ROOT / report["source"]).is_file():
+            if not (data_root() / report["source"]).is_file():
                 issues.append({"code": "research_file_missing", "position_id": pid, "research_id": report["id"], "severity": "block"})
         value = values[pid]
         weight = value / total
@@ -101,10 +105,10 @@ def calculate(as_of: str, cadence: str) -> dict:
         delta = sum((values[pid] * D(shock) for pid, shock in scenario["shocks"].items()), D(0))
         scenarios.append({"id": scenario["id"], "name": scenario["name"], "assumption": scenario["description"], "change_usd": money(delta), "change_pct": pct(delta / total), "ending_value_usd": money(total + delta)})
     file_hashes = {}
-    source_paths = [ROOT / "fixtures/portfolio.json", ROOT / "fixtures/research.json"]
-    source_paths.extend(ROOT / report["source"] for report in research["reports"] if (ROOT / report["source"]).is_file())
+    source_paths = [data_root() / "fixtures/portfolio.json", data_root() / "fixtures/research.json"]
+    source_paths.extend(data_root() / report["source"] for report in research["reports"] if (data_root() / report["source"]).is_file())
     for path in source_paths:
-        file_hashes[str(path.relative_to(ROOT))] = hashlib.sha256(path.read_bytes()).hexdigest()
+        file_hashes[str(path.relative_to(data_root()))] = hashlib.sha256(path.read_bytes()).hexdigest()
     status = "blocked" if any(i["severity"] == "block" for i in issues) else "review_required"
     return {"schema_version": 1, "fictional": True, "as_of": as_of, "cadence": cadence, "methodology": p["methodology"], "status": status, "total_value_usd": money(total), "cash_usd": money(D(p["cash"])), "cash_weight_pct": pct(cash_weight), "daily_change_from_prior_close_usd": money(daily_pnl), "positions": output_positions, "sectors": output_sectors, "scenarios": scenarios, "issues": issues, "source_sha256": file_hashes, "model_analysis": None, "trade_execution_available": False}
 
@@ -174,7 +178,7 @@ def execute(name: str, args: dict) -> dict:
         if not row:
             raise ValueError("Use an exact position ID from finance_latest_run")
         research = next((x for x in r["reports"] if x["id"] == row["research_id"]), None)
-        document = read_document(ROOT, research["source"]) if research else None
+        document = read_document(data_root(), research["source"]) if research else None
         return {"fictional": True, "position": row, "research": research,
                 "research_index_scope": "Catalog metadata and summary; compare with source_document for the actual file contents.",
                 "source_document": document}

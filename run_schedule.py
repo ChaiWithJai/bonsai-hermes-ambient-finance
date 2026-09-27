@@ -2,17 +2,32 @@
 from __future__ import annotations
 
 import argparse
+import fcntl
 import json
 import os
 import subprocess
 import sys
 import sqlite3
 import time
+import tempfile
 from datetime import date, datetime, timezone
 from pathlib import Path
 
 from finance import ROOT, RUNS, calculate
 from lib.hermes_result import cursor, final_answer
+
+def write_report(path: Path, report: dict):
+    with tempfile.NamedTemporaryFile("w", dir=path.parent, prefix=".report-", delete=False) as pending:
+        temporary = Path(pending.name)
+        try:
+            pending.write(json.dumps(report, indent=2) + "\n")
+            pending.flush()
+            os.fsync(pending.fileno())
+        except BaseException:
+            temporary.unlink(missing_ok=True)
+            raise
+    os.replace(temporary, path)
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--cadence", choices=["nightly", "daily", "weekly", "quarterly"], required=True)
@@ -29,6 +44,11 @@ if args.model_timeout < 60:
 RUNS.mkdir(parents=True, exist_ok=True)
 run_id = f"{args.as_of}-{args.cadence}"
 out = RUNS / f"{run_id}.json"
+work_lock = (RUNS / f".{run_id}.lock").open("a")
+try:
+    fcntl.flock(work_lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+except BlockingIOError:
+    raise SystemExit("Another worker already owns this work item")
 if out.exists() and not args.retry_model:
     raise SystemExit(f"Run already exists: {out}. A scheduled retry will not overwrite its evidence.")
 if args.retry_model:
@@ -65,8 +85,9 @@ if args.with_hermes and result["status"] == "review_required":
               "Do not discuss prior model attempts, propose an order, or claim a trade was placed.")
     run_budget = max(30, args.model_timeout - 60)
     command = ["hermes", "--profile", args.profile, "chat", "--oneshot", "-Q", "--run-budget", str(run_budget), "-q", prompt]
+    result["model_status"] = "running"
     # Save the deterministic report first, so the tool can read it during the agent run.
-    out.write_text(json.dumps(result, indent=2) + "\n")
+    write_report(out, result)
     session_db = args.session_db or Path.home() / ".hermes" / "profiles" / args.profile / "state.db"
     before_message = cursor(session_db)
     started = time.monotonic()
@@ -97,7 +118,7 @@ if args.with_hermes and result["status"] == "review_required":
     result["model_elapsed_seconds"] = round(time.monotonic() - started, 1)
 else:
     result["model_status"] = "skipped_data_gate" if args.with_hermes else "not_requested"
-out.write_text(json.dumps(result, indent=2) + "\n")
+write_report(out, result)
 print(json.dumps({"run_id": run_id, "status": result["status"], "model_status": result["model_status"], "issues": result["issues"], "path": str(out)}))
 
 if result["model_status"] == "failed":

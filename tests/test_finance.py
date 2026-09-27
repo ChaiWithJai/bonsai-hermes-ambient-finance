@@ -205,7 +205,7 @@ class FinanceTests(unittest.TestCase):
                               "import json,os,pathlib,sys\n"
                               "p=pathlib.Path(os.environ['AMBIENT_FINANCE_RUNS'])/'2026-09-25-daily.json'\n"
                               "r=json.loads(p.read_text())\n"
-                              "if r.get('model_analysis') is not None or r['model_status']!='pending': sys.exit(7)\n"
+                              "if r.get('model_analysis') is not None or r['model_status']!='running': sys.exit(7)\n"
                               "print('Fresh fictional draft')\n")
             binary.chmod(0o755)
             env = {**os.environ, "AMBIENT_FINANCE_RUNS": tmp,
