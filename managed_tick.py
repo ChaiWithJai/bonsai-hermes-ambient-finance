@@ -15,6 +15,7 @@ from datetime import datetime
 from pathlib import Path
 import scheduler
 from finance import RUNS, calculate
+from lib.work_item import can_refresh
 
 ROOT = Path(__file__).resolve().parent
 
@@ -29,6 +30,8 @@ def needs_model(now):
         if not path.exists():
             return True
         saved = json.loads(path.read_text())
+        if can_refresh(saved, report) and not (RUNS / f'{day}-{cadence}.reviews.jsonl').exists():
+            return True
         attempts = list((RUNS / 'attempts').glob(f'{day}-{cadence}-*.json'))
         if (saved.get('model_status') in ('failed', 'running') and len(attempts) < 2
                 and saved.get('source_sha256') == report['source_sha256']):

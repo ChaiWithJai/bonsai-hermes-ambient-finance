@@ -31,7 +31,7 @@ On a shared lab Mac, replace `--dedicated-host` with `--queue-module /absolute/p
 
 The installer refuses to change a differing existing job without `--replace`. Inspect its model paths, profile, source directory and work directory before replacing it. The managed wrapper preserves existing listeners on its model and proxy ports and starts only processes it owns. A local lock prevents overlapping managed checks, and a work-item lock prevents concurrent workers from overwriting the same report.
 
-A failed or interrupted draft can be retried twice on later checks if its source hashes remain unchanged. Each attempt is archived before retry, and work-item writes use an atomic rename. A completed draft remains unchanged. The service records failures separately from completed drafts, and it still requires a saved Hermes final answer.
+A failed or interrupted draft can be retried twice on later checks if its source hashes remain unchanged. Each attempt is archived before retry, and work-item writes use an atomic rename. A completed draft remains unchanged. When refreshed sources clear an unreviewed blocked item, the next check starts inference and preserves the earlier record in `revisions/`. The service records failures separately from completed drafts, and it still requires a saved Hermes final answer.
 
 Inspect the installed job and its logs with:
 

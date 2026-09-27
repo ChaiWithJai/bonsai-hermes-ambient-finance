@@ -15,6 +15,7 @@ from pathlib import Path
 
 from finance import ROOT, RUNS, calculate
 from lib.hermes_result import cursor, final_answer
+from lib.work_item import can_refresh
 
 def write_report(path: Path, report: dict):
     with tempfile.NamedTemporaryFile("w", dir=path.parent, prefix=".report-", delete=False) as pending:
@@ -33,7 +34,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--cadence", choices=["nightly", "daily", "weekly", "quarterly"], required=True)
 parser.add_argument("--as-of", default=date.today().isoformat())
 parser.add_argument("--with-hermes", action="store_true")
-parser.add_argument("--retry-model", action="store_true", help="Retry model generation for an existing unchanged work item")
+retry_mode = parser.add_mutually_exclusive_group()
+retry_mode.add_argument("--refresh-blocked", action="store_true", help="Archive a blocked item and use changed, valid sources")
+retry_mode.add_argument("--retry-model", action="store_true", help="Retry model generation for an existing unchanged work item")
 parser.add_argument("--profile", default="ambient-finance-demo")
 parser.add_argument("--session-db", type=Path, help="Hermes state.db path when using a nonstandard profile location")
 parser.add_argument("--model-timeout", type=int, default=660, help="Whole Hermes process timeout, including startup (seconds)")
@@ -49,7 +52,23 @@ try:
     fcntl.flock(work_lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
 except BlockingIOError:
     raise SystemExit("Another worker already owns this work item")
-if out.exists() and not args.retry_model:
+refreshed = None
+source_revision = 0
+if args.refresh_blocked:
+    if not out.exists():
+        raise SystemExit("Refresh requires an existing blocked work item")
+    previous_bytes = out.read_bytes()
+    previous = json.loads(previous_bytes)
+    refreshed = calculate(args.as_of, args.cadence)
+    if not can_refresh(previous, refreshed) or (RUNS / f"{run_id}.reviews.jsonl").exists():
+        raise SystemExit("Refresh requires changed, valid sources and an unreviewed blocked item")
+    revisions = RUNS / "revisions"
+    revisions.mkdir(exist_ok=True)
+    snapshot = revisions / f"{run_id}-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')}.json"
+    with snapshot.open("xb") as handle:
+        handle.write(previous_bytes)
+    source_revision = previous.get("source_revision", 0) + 1
+if out.exists() and not (args.retry_model or args.refresh_blocked):
     raise SystemExit(f"Run already exists: {out}. A scheduled retry will not overwrite its evidence.")
 if args.retry_model:
     if not out.exists() or not args.with_hermes:
@@ -70,7 +89,8 @@ if args.retry_model:
     result["model_analysis"] = None
     result["model_status"] = "pending"
 else:
-    result = calculate(args.as_of, args.cadence)
+    result = refreshed if refreshed is not None else calculate(args.as_of, args.cadence)
+    result["source_revision"] = source_revision
     result["run_id"] = run_id
     result["created_at_utc"] = datetime.now(timezone.utc).isoformat()
     result["review_decision"] = "pending"

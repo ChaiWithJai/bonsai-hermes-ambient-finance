@@ -46,7 +46,7 @@ The managed wrapper checks whether due work needs inference before loading the m
 
 After readiness, the worker generates the review and verifies persistence. The wrapper then stops its owned processes and releases the reservation. Uncertain cleanup leaves the reservation for inspection. The Mac must remain awake with the user logged in; reboot recovery has not been verified, and missed dates are not backfilled.
 
-A data-blocked work item is currently immutable for its date. Refreshing sources after that item is recorded does not automatically reconsider it on the same date. A new dated item can use refreshed sources, but a same-day source-refresh workflow requires an explicit revision mechanism. The scheduler must not silently overwrite the earlier blocked evidence.
+When changed sources clear a blocked item, the next scheduled check can reconsider it on the same date. The worker archives the previous record byte-for-byte under `revisions/` and increments `source_revision` before generating a draft. Unchanged or still-blocked sources leave the record untouched. Completed work and items with a human review record are not reopened.
 
 ## Design choice
 
