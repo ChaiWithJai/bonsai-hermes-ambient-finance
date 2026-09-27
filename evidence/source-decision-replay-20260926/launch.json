@@ -1,0 +1,6 @@
+{
+  "queue_job": "finance-source-decision-replay-1790469547871210000",
+  "profile": "ambient-finance-source-decision",
+  "scope": "Historical-date local source-decision replay with owned model and proxy processes",
+  "revision": "a7c3b6babe0bc6190d7ed0c498708416e26e6ee7"
+}
