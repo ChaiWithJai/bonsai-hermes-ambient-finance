@@ -7,6 +7,7 @@ import urllib.request
 
 from finance import RUNS, calculate
 from lib.work_item import can_refresh
+from lib.owned_process import run as run_owned
 import subprocess
 import sys
 import time
@@ -88,7 +89,7 @@ def tick(now: datetime, dry_run: bool = False, profile: str = "ambient-finance-d
             command.append("--refresh-blocked")
         elif retry:
             command.append("--retry-model")
-        result = subprocess.run(command, capture_output=True, text=True)
+        result = run_owned(command)
         output.append({"cadence": cadence, "status": "recorded" if result.returncode == 0 else "failed", "detail": result.stdout.strip() if result.returncode == 0 else (result.stderr.strip() or result.stdout.strip())})
     return output
 

@@ -118,7 +118,7 @@ class FinanceTests(unittest.TestCase):
     def test_schedule_waits_for_model_then_runs_without_losing_item(self):
         with tempfile.TemporaryDirectory() as tmp:
             now = datetime(2026, 9, 25, 9, tzinfo=ZoneInfo("America/New_York"))
-            with patch.object(scheduler, "RUNS", Path(tmp) / "runs"), patch.object(scheduler, "model_ready", side_effect=[False, True]), patch.object(scheduler.subprocess, "run") as run:
+            with patch.object(scheduler, "RUNS", Path(tmp) / "runs"), patch.object(scheduler, "model_ready", side_effect=[False, True]), patch.object(scheduler, "run_owned") as run:
                 run.return_value = subprocess.CompletedProcess([], 0, "saved", "")
                 self.assertEqual(scheduler.tick(now)[0]["status"], "waiting_for_model")
                 run.assert_not_called()
@@ -133,7 +133,7 @@ class FinanceTests(unittest.TestCase):
             report["model_status"] = "failed"
             (run_dir / "2026-09-25-daily.json").write_text(json.dumps(report))
             now = datetime(2026, 9, 25, 9, tzinfo=ZoneInfo("America/New_York"))
-            with patch.object(scheduler, "RUNS", run_dir), patch.object(scheduler, "model_ready", return_value=True), patch.object(scheduler.subprocess, "run") as worker:
+            with patch.object(scheduler, "RUNS", run_dir), patch.object(scheduler, "model_ready", return_value=True), patch.object(scheduler, "run_owned") as worker:
                 worker.return_value = subprocess.CompletedProcess([], 1, "", "failed")
                 self.assertEqual(scheduler.tick(now, profile="isolated-recovery")[0]["status"], "failed")
                 self.assertEqual(worker.call_args.args[0][-3:-1], ["--profile", "isolated-recovery"])
@@ -154,14 +154,14 @@ class FinanceTests(unittest.TestCase):
             report.update(model_status="failed", source_sha256={"old": "hash"})
             (run_dir / "2026-09-25-daily.json").write_text(json.dumps(report))
             now = datetime(2026, 9, 25, 9, tzinfo=ZoneInfo("America/New_York"))
-            with patch.object(scheduler, "RUNS", run_dir), patch.object(scheduler, "model_ready", return_value=True), patch.object(scheduler.subprocess, "run") as worker:
+            with patch.object(scheduler, "RUNS", run_dir), patch.object(scheduler, "model_ready", return_value=True), patch.object(scheduler, "run_owned") as worker:
                 self.assertEqual(scheduler.tick(now)[0]["status"], "source_changed")
                 worker.assert_not_called()
 
     def test_stale_data_is_recorded_even_without_model(self):
         with tempfile.TemporaryDirectory() as tmp:
             now = datetime(2026, 9, 26, 9, tzinfo=ZoneInfo("America/New_York"))
-            with patch.object(scheduler, "RUNS", Path(tmp) / "runs"), patch.object(scheduler, "model_ready") as ready, patch.object(scheduler.subprocess, "run") as run:
+            with patch.object(scheduler, "RUNS", Path(tmp) / "runs"), patch.object(scheduler, "model_ready") as ready, patch.object(scheduler, "run_owned") as run:
                 run.return_value = subprocess.CompletedProcess([], 0, "blocked", "")
                 self.assertEqual(scheduler.tick(now)[0]["status"], "recorded")
                 ready.assert_not_called()
