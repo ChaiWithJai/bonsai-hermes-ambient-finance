@@ -126,6 +126,37 @@ class FinanceTests(unittest.TestCase):
                 self.assertEqual(scheduler.tick(now)[0]["status"], "recorded")
                 run.assert_called_once()
 
+    def test_failed_schedule_retries_twice_then_preserves_failure(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            run_dir = Path(tmp)
+            report = finance.calculate("2026-09-25", "daily")
+            report["model_status"] = "failed"
+            (run_dir / "2026-09-25-daily.json").write_text(json.dumps(report))
+            now = datetime(2026, 9, 25, 9, tzinfo=ZoneInfo("America/New_York"))
+            with patch.object(scheduler, "RUNS", run_dir), patch.object(scheduler, "model_ready", return_value=True), patch.object(scheduler.subprocess, "run") as worker:
+                worker.return_value = subprocess.CompletedProcess([], 1, "", "failed")
+                self.assertEqual(scheduler.tick(now)[0]["status"], "failed")
+                self.assertIn("--retry-model", worker.call_args.args[0])
+                attempts = run_dir / "attempts"
+                attempts.mkdir()
+                for number in range(2):
+                    (attempts / f"2026-09-25-daily-{number}.json").write_text("{}")
+                worker.reset_mock()
+                self.assertEqual(scheduler.tick(now)[0]["status"], "retry_limit_reached")
+                worker.assert_not_called()
+                self.assertEqual(json.loads((run_dir / "2026-09-25-daily.json").read_text()), report)
+
+    def test_failed_schedule_does_not_retry_changed_sources(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            run_dir = Path(tmp)
+            report = finance.calculate("2026-09-25", "daily")
+            report.update(model_status="failed", source_sha256={"old": "hash"})
+            (run_dir / "2026-09-25-daily.json").write_text(json.dumps(report))
+            now = datetime(2026, 9, 25, 9, tzinfo=ZoneInfo("America/New_York"))
+            with patch.object(scheduler, "RUNS", run_dir), patch.object(scheduler, "model_ready", return_value=True), patch.object(scheduler.subprocess, "run") as worker:
+                self.assertEqual(scheduler.tick(now)[0]["status"], "source_changed")
+                worker.assert_not_called()
+
     def test_stale_data_is_recorded_even_without_model(self):
         with tempfile.TemporaryDirectory() as tmp:
             now = datetime(2026, 9, 26, 9, tzinfo=ZoneInfo("America/New_York"))
@@ -181,7 +212,7 @@ class FinanceTests(unittest.TestCase):
             proc = subprocess.run([sys.executable, str(ROOT / "run_schedule.py"), "--cadence", "daily",
                                    "--as-of", "2026-09-25", "--retry-model", "--with-hermes", "--session-db", str(base / "hermes-state.db")],
                                   capture_output=True, text=True, env=env)
-            self.assertEqual(proc.returncode, 0, proc.stderr)
+            self.assertEqual(proc.returncode, 1, proc.stderr)
             after = json.loads((base / "2026-09-25-daily.json").read_text())
             self.assertEqual(after["model_status"], "failed")
             self.assertIsNone(after["model_analysis"])

@@ -1,0 +1,13 @@
+{
+  "captured_at": "2026-09-27T01:17:41.421001+00:00",
+  "trigger": "launchd bootstrap RunAtLoad, then launchctl kickstart",
+  "test_label": "com.prismml.bonsai-ambient-finance.recovery-check",
+  "run_count": 1,
+  "work_item_hashes_before_and_after": {
+    "2026-09-26-daily.json": "5cb0cad6d516c1fc45a1137c9ebb31cad3a69a60a7d6c4de5527af48e1077d37"
+  },
+  "all_data_blocked": true,
+  "model_inference_called": false,
+  "restart_preserved_work_items": true,
+  "scope": "Current-date source gate and scheduler restart; no completed model inference"
+}

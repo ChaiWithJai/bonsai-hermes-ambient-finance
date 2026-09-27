@@ -60,9 +60,14 @@ def tick(now: datetime, dry_run: bool = False) -> list[dict]:
     for cadence in due(now):
         run_id = f"{local.date().isoformat()}-{cadence}"
         path = RUNS / f"{run_id}.json"
+        retry = False
         if path.exists():
-            output.append({"cadence": cadence, "status": "already_recorded"})
-            continue
+            saved = json.loads(path.read_text())
+            retry = saved.get("status") == "review_required" and saved.get("model_status") == "failed"
+            attempts = list((RUNS / "attempts").glob(f"{run_id}-*.json"))
+            if not retry or len(attempts) >= 2:
+                output.append({"cadence": cadence, "status": "retry_limit_reached" if retry else "already_recorded"})
+                continue
         if dry_run:
             output.append({"cadence": cadence, "status": "would_run"})
             continue
@@ -70,8 +75,14 @@ def tick(now: datetime, dry_run: bool = False) -> list[dict]:
         if report["status"] == "review_required" and not model_ready():
             output.append({"cadence": cadence, "status": "waiting_for_model"})
             continue
-        result = subprocess.run([sys.executable, str(ROOT / "run_schedule.py"), "--cadence", cadence, "--as-of", local.date().isoformat(), "--with-hermes"], capture_output=True, text=True)
-        output.append({"cadence": cadence, "status": "recorded" if result.returncode == 0 else "failed", "detail": result.stdout.strip() if result.returncode == 0 else result.stderr.strip()})
+        if retry and report["source_sha256"] != saved["source_sha256"]:
+            output.append({"cadence": cadence, "status": "source_changed"})
+            continue
+        command = [sys.executable, str(ROOT / "run_schedule.py"), "--cadence", cadence, "--as-of", local.date().isoformat(), "--with-hermes"]
+        if retry:
+            command.append("--retry-model")
+        result = subprocess.run(command, capture_output=True, text=True)
+        output.append({"cadence": cadence, "status": "recorded" if result.returncode == 0 else "failed", "detail": result.stdout.strip() if result.returncode == 0 else (result.stderr.strip() or result.stdout.strip())})
     return output
 
 

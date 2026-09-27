@@ -99,3 +99,6 @@ else:
     result["model_status"] = "skipped_data_gate" if args.with_hermes else "not_requested"
 out.write_text(json.dumps(result, indent=2) + "\n")
 print(json.dumps({"run_id": run_id, "status": result["status"], "model_status": result["model_status"], "issues": result["issues"], "path": str(out)}))
+
+if result["model_status"] == "failed":
+    raise SystemExit(1)
