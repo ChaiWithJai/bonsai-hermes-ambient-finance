@@ -1,0 +1,59 @@
+{
+  "attempts": [
+    {
+      "prompt_tokens": 6261,
+      "completion_tokens": 704,
+      "total_tokens": 6965,
+      "cached_tokens": 5164,
+      "exchange": "1a56ab53c94e4739b745de8d4078944c.json",
+      "phase": "original",
+      "http_status": 200,
+      "usage_available": true,
+      "finish_reason": "stop",
+      "content_characters": 1325,
+      "reasoning_characters": 945,
+      "tool_calls": 0
+    },
+    {
+      "prompt_tokens": 5168,
+      "completion_tokens": 272,
+      "total_tokens": 5440,
+      "cached_tokens": 3527,
+      "exchange": "1bb641a1fe2e454caaa4111475483058.json",
+      "phase": "original",
+      "http_status": 200,
+      "usage_available": true,
+      "finish_reason": "tool_calls",
+      "content_characters": 0,
+      "reasoning_characters": 708,
+      "tool_calls": 2
+    },
+    {
+      "prompt_tokens": 3531,
+      "completion_tokens": 127,
+      "total_tokens": 3658,
+      "cached_tokens": 0,
+      "exchange": "6b911a671cc34ea39cea6d68c11147b6.json",
+      "phase": "original",
+      "http_status": 200,
+      "usage_available": true,
+      "finish_reason": "tool_calls",
+      "content_characters": 0,
+      "reasoning_characters": 294,
+      "tool_calls": 1
+    }
+  ],
+  "all_attempts": {
+    "prompt_tokens": 14960,
+    "completion_tokens": 1103,
+    "total_tokens": 16063,
+    "cached_tokens": 8691
+  },
+  "corrective_attempts": {
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "total_tokens": 0,
+    "cached_tokens": 0
+  },
+  "scope": "Includes every recorded upstream attempt, even an attempt returned as502 to Hermes. Missing usage is flagged separately, not estimated."
+}

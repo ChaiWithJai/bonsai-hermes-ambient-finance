@@ -1,0 +1,10 @@
+{
+  "session_id": "20260926_213638_302382",
+  "model_status": "completed",
+  "saved_final_matches_session": true,
+  "word_count": 201,
+  "corrective_calls": 0,
+  "human_review": "pending",
+  "scope": "One direct scheduler retry of an isolated historical work item. Corrective branch was present but not exercised, so its live recovery remains unverified.",
+  "agent_review": "Portfolio totals, Helix and Meridian weights, and both scenarios match the work item. Requests current R-MER research and an owner/date, keeps acceptance unavailable, and proposes no trade. Human review remains pending."
+}

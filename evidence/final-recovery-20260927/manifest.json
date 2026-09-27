@@ -1,0 +1,15 @@
+{
+  "queue_job": "ambient-finance-final-recovery-20260927",
+  "files": {
+    "scheduler.py": "41ee7ce31cebc1209eeda3cd86c1dcf827a022b0877d537681164e98ce7d8385",
+    "run_schedule.py": "952378dea66d4d9a1b87b30b98aba779b97455d923745084f80f4dc05a95a0c2",
+    "settings_proxy.py": "3539db7172c4928934878c007af3b1b5b887bcfe1765efa59ac500fd016328a7",
+    "lib/final_response.py": "8d04ec27aa7ac2970675bac6df3a2e2102c2bd6d37678a85303cf4d4766e2131",
+    "config/SOUL.md": "8c9030d29f0f3324df2a8639c4d9a5b25fe12db019e9ba938b9a20417a74fefb",
+    "config/sampling.json": "af76223d9c54036da433160229981200b426710f33b7b1048d76c83d1b0fd6b5",
+    "start_model.sh": "8cbf6b62f9a78159d4a0c471d35295ab9423c92f736decf1d341276c7357f240"
+  },
+  "model_sha256": "3907dc1658db1f78a9826bf8d5bcb8dc65db0d466388937af57f2294fae62ec1",
+  "runtime_sha256": "1ad69ebaada923760c52c1dc50daf198a22c2adb4a9dcccd25779fa7079f353b",
+  "intervention": "One corrective final generation with thinking and tools disabled if original response has reasoning-only stop; not isolated model improvement"
+}
