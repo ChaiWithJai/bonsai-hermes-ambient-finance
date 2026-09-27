@@ -76,3 +76,7 @@ The review is appended to `runs/2026-09-25-nightly.reviews.jsonl`. The reviewer 
 ## Verify the demonstration
 
 Run `python3 -m unittest discover -s tests -v`. The tests check scenario arithmetic, current-price blocking, missing research, incomplete scenario inputs, the schedule, retry behavior, the tool surface and the review gate. The publishable evidence in `evidence/` contains an earlier timed-out daily attempt, a nightly run that completed with a clean Hermes exit, and the first LaunchAgent-triggered daily run that blocked on stale prices without calling Hermes. The nightly session called the two read-only tools, returned a 182-word draft, and passed 14 narrow offline MLflow checks. Read `EVIDENCE.md` before describing these runs; the evaluation is not a live model trace or investment-quality review.
+
+## Inspect the installed configuration
+
+The [configuration screenshot and source record](docs/recorded-configuration.md) show the installed Hermes endpoint, context, turn limit and tool servers. Compare them with the setup template when reproducing the run.

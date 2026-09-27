@@ -1,0 +1,40 @@
+{
+  "captured_at_utc": "2026-09-27T02:06:49.868227+00:00",
+  "scope": "Installed profile captured after the recorded runs; not an immutable at-run snapshot. Credentials, paths and tool environment omitted.",
+  "profile": "ambient-finance-managed-launchd-20260927",
+  "profile_file_sha256": "25af152bb59ec517cea8d118854eefb4cf4629080448b2c4962c6f6875c29d0f",
+  "model": {
+    "default": "bonsai-ui-public-ternary-bonsai2",
+    "provider": "custom",
+    "base_url": "http://127.0.0.1:5264/v1",
+    "api_mode": "chat_completions",
+    "streaming": false,
+    "context_length": 65536
+  },
+  "agent": {
+    "max_turns": 8,
+    "reasoning_effort": "medium"
+  },
+  "mcp_server_names": [
+    "ambient_finance"
+  ],
+  "recorded_request": {
+    "model": "bonsai-ui-public-ternary-bonsai2",
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "top_k": 20,
+    "min_p": 0.05,
+    "max_tokens": 1536,
+    "stream": false,
+    "chat_template_kwargs": {
+      "enable_thinking": true,
+      "reasoning_effort": "medium"
+    }
+  },
+  "recorded_request_source": {
+    "exchange_id": "9d06f98d4ac743a59e771c2bce3b33ef",
+    "sha256": "bac217177799e617fb9c66d5a64e5d68cfcb77e2bfec04de4444dbaaa6290ea4",
+    "session_id": "20260926_214801_43f342",
+    "evidence": "managed-launchd-20260927/usage.json"
+  }
+}
