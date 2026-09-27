@@ -58,8 +58,9 @@ else:
 if args.with_hermes and result["status"] == "review_required":
     prompt = (f"Review finance work item {run_id}. "
               f"Call finance_latest_run with run_id={run_id}, then finance_position for the largest exposure and the stale-research position. "
-              "Discuss only those two positions, both assumed scenarios, and the next_decision in review_context. "
-              "If acceptance_blocked_by_sources is true, ask who will obtain the named research updates; do not offer an acceptance exception. "
+              "Explain those two positions, both assumed scenarios, and the research the team needs before it can finish the review. "
+              "When the tool says source issues prevent acceptance, ask who will obtain the named research updates and when. Keep acceptance unavailable until those issues are resolved. "
+              "Write for the portfolio manager: describe the decision in ordinary sentences without quoting JSON keys or boolean values. "
               "Cite exact IDs. Write a draft of at most 250 words for a human portfolio manager. "
               "Do not discuss prior model attempts, propose an order, or claim a trade was placed.")
     run_budget = max(30, args.model_timeout - 60)
