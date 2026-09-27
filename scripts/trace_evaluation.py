@@ -1,13 +1,14 @@
 """Record a real MLflow trace of the deterministic review of a captured model draft."""
 import sys
-from pathlib import Path
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import argparse
 import json
 import os
+from pathlib import Path
 
 import mlflow
 from mlflow.entities import SpanType
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from evaluate_analysis import evaluate
 from finance import RUNS

@@ -1,5 +1,15 @@
 # How a portfolio review is prepared
 
+```mermaid
+flowchart LR
+    Sources[Positions, prices and analyst reports] --> Checks[Freshness and portfolio calculations]
+    Timer[Scheduled check] --> Checks
+    Checks --> Work[Saved review item]
+    Work --> Hermes[Hermes and local Bonsai]
+    Hermes --> Draft[Draft with unresolved research]
+    Draft --> Reviewer[Portfolio team review]
+```
+
 The workstation prepares a dated review for a portfolio manager. Python calculates exposures and stated scenarios, while Hermes asks local Bonsai to explain the positions and unresolved research. The saved draft gives the manager source identifiers and the decision that still needs attention.
 
 ## Sources and calculations
@@ -37,3 +47,7 @@ The managed wrapper checks whether due work needs inference before loading the m
 After readiness, the worker generates the review and verifies persistence. The wrapper then stops its owned processes and releases the reservation. Uncertain cleanup leaves the reservation for inspection. The Mac must remain awake with the user logged in; reboot recovery has not been verified, and missed dates are not backfilled.
 
 A data-blocked work item is currently immutable for its date. Refreshing sources after that item is recorded does not automatically reconsider it on the same date. A new dated item can use refreshed sources, but a same-day source-refresh workflow requires an explicit revision mechanism. The scheduler must not silently overwrite the earlier blocked evidence.
+
+## Design choice
+
+A scheduled calculation can already flag concentration or stale research. Here Python performs those checks, and the model explains their implications using the cited report pages and model rows. The saved item preserves the inputs behind the explanation. A fixed dashboard is simpler for recurring metrics; the agent adds value when an exception requires source reading and a proposed follow-up.
