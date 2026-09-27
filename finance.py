@@ -10,6 +10,8 @@ from datetime import date
 from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
 
+from lib.source_documents import read_document
+
 ROOT = Path(__file__).resolve().parent
 RUNS = Path(os.environ.get("AMBIENT_FINANCE_RUNS", str(ROOT / "runs")))
 
@@ -26,9 +28,13 @@ def pct(value: Decimal) -> str:
     return str((value * 100).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
 
 
+def data_root() -> Path:
+    return Path(os.environ.get("AMBIENT_FINANCE_DATA", str(ROOT))).expanduser().absolute()
+
+
 def load_fixture() -> tuple[dict, dict]:
-    portfolio = json.loads((ROOT / "fixtures/portfolio.json").read_text())
-    research = json.loads((ROOT / "fixtures/research.json").read_text())
+    portfolio = json.loads((data_root() / "fixtures/portfolio.json").read_text())
+    research = json.loads((data_root() / "fixtures/research.json").read_text())
     assert portfolio["fictional"] and research["fictional"]
     return portfolio, research
 
@@ -73,7 +79,7 @@ def calculate(as_of: str, cadence: str) -> dict:
                 issues.append({"code": "research_future_dated", "position_id": pid, "severity": "block"})
             elif age > int(limits["max_research_age_days"]):
                 issues.append({"code": "research_stale", "position_id": pid, "research_id": report["id"], "age_days": age, "severity": "review"})
-            if not (ROOT / report["source"]).is_file():
+            if not (data_root() / report["source"]).is_file():
                 issues.append({"code": "research_file_missing", "position_id": pid, "research_id": report["id"], "severity": "block"})
         value = values[pid]
         weight = value / total
@@ -99,22 +105,72 @@ def calculate(as_of: str, cadence: str) -> dict:
         delta = sum((values[pid] * D(shock) for pid, shock in scenario["shocks"].items()), D(0))
         scenarios.append({"id": scenario["id"], "name": scenario["name"], "assumption": scenario["description"], "change_usd": money(delta), "change_pct": pct(delta / total), "ending_value_usd": money(total + delta)})
     file_hashes = {}
-    for path in [ROOT / "fixtures/portfolio.json", ROOT / "fixtures/research.json"]:
-        file_hashes[str(path.relative_to(ROOT))] = hashlib.sha256(path.read_bytes()).hexdigest()
+    source_paths = [data_root() / "fixtures/portfolio.json", data_root() / "fixtures/research.json"]
+    source_paths.extend(data_root() / report["source"] for report in research["reports"] if (data_root() / report["source"]).is_file())
+    for path in source_paths:
+        file_hashes[str(path.relative_to(data_root()))] = hashlib.sha256(path.read_bytes()).hexdigest()
     status = "blocked" if any(i["severity"] == "block" for i in issues) else "review_required"
     return {"schema_version": 1, "fictional": True, "as_of": as_of, "cadence": cadence, "methodology": p["methodology"], "status": status, "total_value_usd": money(total), "cash_usd": money(D(p["cash"])), "cash_weight_pct": pct(cash_weight), "daily_change_from_prior_close_usd": money(daily_pnl), "positions": output_positions, "sectors": output_sectors, "scenarios": scenarios, "issues": issues, "source_sha256": file_hashes, "model_analysis": None, "trade_execution_available": False}
 
 
-def latest_run() -> dict:
+def source_review_requirements(run: dict) -> list[str]:
+    reasons = []
+    if run["status"] == "blocked":
+        reasons.append("Source data are blocked. Refresh them before accepting analysis.")
+    if any(issue["severity"] == "review" for issue in run["issues"]):
+        reasons.append("Open limit or research issue. Resolve it before accepting analysis.")
+    return reasons
+
+
+def acceptance_requirements(run: dict) -> dict:
+    reasons = source_review_requirements(run)
+    if run.get("model_status") != "completed":
+        reasons.append("No completed Hermes analysis is available for review.")
+    return {"can_accept_analysis": not reasons, "reasons": reasons,
+            "trade_authorized": False}
+
+
+def work_item_response(run: dict) -> dict:
+    # Draft generation needs portfolio facts, not its own changing execution state.
+    facts = {key: value for key, value in run.items()
+             if not key.startswith("model_") and key != "review_decision"}
+    requirements = source_review_requirements(run)
+    research_actions = [
+        {"action": "refresh_research", "position_id": issue["position_id"],
+         "research_id": issue["research_id"],
+         "reason": "The research exceeds the review age limit. Obtain a current report before acceptance."}
+        for issue in run["issues"] if issue["code"] == "research_stale"
+    ]
+    return {**facts, "source_review_requirements": requirements,
+            "review_context": {
+                "acceptance_blocked_by_sources": bool(requirements),
+                "source_requirements": requirements,
+                "required_research_actions": research_actions,
+                "source_exception_available": False,
+                "next_decision": (
+                    "Determine who will obtain the required source updates. Acceptance is unavailable until the source issues are resolved."
+                    if requirements else
+                    "Review the completed draft for accuracy before recording an acceptance decision."),
+            }}
+
+
+def latest_run(run_id=None) -> dict:
+    if run_id is not None:
+        if not isinstance(run_id, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}-(?:nightly|daily|weekly|quarterly)", run_id):
+            raise ValueError("Use an exact dated run ID")
+        path = RUNS / (run_id + ".json")
+        if not path.exists():
+            raise ValueError("Requested work item does not exist")
+        return work_item_response(json.loads(path.read_text()))
     paths = sorted((path for path in RUNS.glob("*.json") if re.fullmatch(r"\d{4}-\d{2}-\d{2}-(?:nightly|daily|weekly|quarterly)\.json", path.name)), key=lambda x: x.stat().st_mtime, reverse=True)
     if not paths:
         return {"status": "no_run", "message": "Run the local schedule first."}
-    return json.loads(paths[0].read_text())
+    return work_item_response(json.loads(paths[0].read_text()))
 
 
 def execute(name: str, args: dict) -> dict:
     if name == "finance_latest_run":
-        return latest_run()
+        return latest_run(args.get("run_id"))
     if name == "finance_position":
         pid = args.get("position_id")
         p, r = load_fixture()
@@ -122,7 +178,10 @@ def execute(name: str, args: dict) -> dict:
         if not row:
             raise ValueError("Use an exact position ID from finance_latest_run")
         research = next((x for x in r["reports"] if x["id"] == row["research_id"]), None)
-        return {"fictional": True, "position": row, "research": research}
+        document = read_document(data_root(), research["source"]) if research else None
+        return {"fictional": True, "position": row, "research": research,
+                "research_index_scope": "Catalog metadata and summary; compare with source_document for the actual file contents.",
+                "source_document": document}
     raise ValueError("Unknown tool")
 
 
@@ -131,7 +190,7 @@ def tool(name: str, description: str, props: dict | None = None, required: list[
 
 
 TOOLS = [
-    tool("finance_latest_run", "Read the latest scheduled fictional portfolio analysis and its source IDs, issues and review status."),
+    tool("finance_latest_run", "Read a scheduled portfolio work item. Supply run_id for a specific task; omit it only to browse the latest work item.", {"run_id": {"type": "string"}}),
     tool("finance_position", "Read a fictional position and its analyst source without changing either.", {"position_id": {"type": "string"}}, ["position_id"]),
 ]
 

@@ -6,12 +6,13 @@ import json, os, time, uuid, urllib.request, urllib.error
 from pathlib import Path
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse
+from lib.final_response import complete
 
 ROOT = Path(__file__).resolve().parent
 UPSTREAM = os.environ.get('BONSAI_UPSTREAM', 'http://127.0.0.1:62737').rstrip('/')
 if urlparse(UPSTREAM).hostname not in ('127.0.0.1', 'localhost', '::1'):
     raise ValueError('The demonstration upstream must be a loopback address.')
-SETTINGS = json.loads((ROOT / 'sampling.json').read_text())
+SETTINGS = json.loads((ROOT / 'config' / 'sampling.json').read_text())
 
 def configure(payload):
     payload = dict(payload)
@@ -49,17 +50,19 @@ class Handler(BaseHTTPRequestHandler):
         except (ValueError, KeyError, TypeError) as error:
             return self.reply(400, {'error': str(error)})
         started = time.monotonic()
-        try:
-            request = urllib.request.Request(UPSTREAM + self.path,
-                data=json.dumps(payload).encode(), headers={'Content-Type': 'application/json'})
-            with urllib.request.urlopen(request, timeout=180) as response:
-                status, body = response.status, json.load(response)
-        except urllib.error.HTTPError as error:
-            status, body = error.code, {'error': error.read().decode(errors='replace')}
-        except Exception as error:
-            status, body = 502, {'error': str(error)}
+        def send(request_payload):
+            try:
+                request = urllib.request.Request(UPSTREAM + self.path,
+                    data=json.dumps(request_payload).encode(), headers={'Content-Type': 'application/json'})
+                with urllib.request.urlopen(request, timeout=180) as response:
+                    return response.status, json.load(response)
+            except urllib.error.HTTPError as error:
+                return error.code, {'error': error.read().decode(errors='replace')}
+            except Exception as error:
+                return 502, {'error': str(error)}
+        status, body, attempts = complete(payload, send)
         record = {'request': payload, 'response': body, 'http_status': status,
-                  'seconds': time.monotonic() - started}
+                  'seconds': time.monotonic() - started, 'attempts': attempts}
         records = ROOT / 'exchanges'
         records.mkdir(exist_ok=True)
         (records / (uuid.uuid4().hex + '.json')).write_text(json.dumps(record, indent=2))

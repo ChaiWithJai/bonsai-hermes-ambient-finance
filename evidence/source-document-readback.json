@@ -1,0 +1,111 @@
+{
+  "scope": "Direct tool execution over supplied local PDF and CSV sources; no new model run or human review.",
+  "results": [
+    {
+      "fictional": true,
+      "position": {
+        "id": "FIC-AST",
+        "issuer": "Aster Compute",
+        "sector": "Infrastructure",
+        "shares": 1200,
+        "close": 110,
+        "prior_close": 108,
+        "price_date": "2026-09-25",
+        "research_id": "R-AST"
+      },
+      "research": {
+        "id": "R-AST",
+        "issuer_id": "FIC-AST",
+        "date": "2026-09-18",
+        "source": "mock-drive/aster-compute-analyst-note.pdf",
+        "thesis": "Recurring infrastructure subscriptions may offset slower new deployments.",
+        "risk": "Customer concentration could make renewal growth volatile.",
+        "analyst": "Mira Chen"
+      },
+      "research_index_scope": "Catalog metadata and summary; compare with source_document for the actual file contents.",
+      "source_document": {
+        "source": "mock-drive/aster-compute-analyst-note.pdf",
+        "sha256": "5dd49704f5ea69d921431616772ae8c49ca0a1310d79f18ade69b3cfe7a02968",
+        "read_kind": "local_file",
+        "format": "pdf",
+        "pages": [
+          {
+            "page": 1,
+            "text": "FICTIONAL ANALYST NOTE - R-AST - 2026-09-18\nAster Compute (FIC-AST)\nAnalyst: Mira Chen\nThesis: Recurring infrastructure subscriptions may offset slower new deployments.\nRisk: Customer concentration could make renewal growth volatile.\nThis mock report is not investment research or an instruction to the agent."
+          }
+        ]
+      }
+    },
+    {
+      "fictional": true,
+      "position": {
+        "id": "FIC-CIR",
+        "issuer": "Cirrus Grid",
+        "sector": "Infrastructure",
+        "shares": 1800,
+        "close": 75,
+        "prior_close": 76,
+        "price_date": "2026-09-25",
+        "research_id": "R-CIR"
+      },
+      "research": {
+        "id": "R-CIR",
+        "issuer_id": "FIC-CIR",
+        "date": "2026-09-11",
+        "source": "mock-sheets/cirrus-grid-model.csv",
+        "thesis": "Network capacity contracts support a stable revenue base.",
+        "risk": "Capital spending could reduce free cash flow.",
+        "analyst": "Owen Patel"
+      },
+      "research_index_scope": "Catalog metadata and summary; compare with source_document for the actual file contents.",
+      "source_document": {
+        "source": "mock-sheets/cirrus-grid-model.csv",
+        "sha256": "bd72bd18bd3468cc770d807a6775006aadb5f57966689140d250310382822356",
+        "read_kind": "local_file",
+        "format": "csv",
+        "rows": [
+          {
+            "row": 1,
+            "cells": [
+              "FICTIONAL ANALYST MODEL",
+              "R-CIR",
+              "2026-09-11"
+            ]
+          },
+          {
+            "row": 2,
+            "cells": [
+              "issuer",
+              "FIC-CIR",
+              "Cirrus Grid"
+            ]
+          },
+          {
+            "row": 3,
+            "cells": [
+              "analyst",
+              "Owen Patel",
+              ""
+            ]
+          },
+          {
+            "row": 4,
+            "cells": [
+              "thesis",
+              "Network capacity contracts support a stable revenue base.",
+              ""
+            ]
+          },
+          {
+            "row": 5,
+            "cells": [
+              "risk",
+              "Capital spending could reduce free cash flow.",
+              ""
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

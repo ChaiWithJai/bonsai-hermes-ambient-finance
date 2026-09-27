@@ -1,0 +1,16 @@
+{
+  "session_id": "20260926_203939_b4e8e8",
+  "final_answer_matches_session": true,
+  "review_source": "Agent inspection against recorded work-item requirements; not human acceptance",
+  "human_acceptance": "pending",
+  "stale_research_exception_offered": false,
+  "next_action": "Obtain current R-MER research and identify who will do it",
+  "remaining_writing_issue": "The final answer exposes review_context and acceptance_blocked_by_sources field names.",
+  "word_count": 205,
+  "tool_names": [
+    "mcp__ambient_finance__finance_latest_run",
+    "mcp__ambient_finance__finance_position",
+    "mcp__ambient_finance__finance_position"
+  ],
+  "scope": "Manually invoked historical-date worker replay with owned local services, not an unattended schedule or speed benchmark"
+}

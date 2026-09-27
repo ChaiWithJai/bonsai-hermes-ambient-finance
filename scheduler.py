@@ -2,6 +2,10 @@
 from __future__ import annotations
 
 import argparse
+import json
+import urllib.request
+
+from finance import RUNS, calculate
 import subprocess
 import sys
 import time
@@ -39,25 +43,52 @@ def due(now: datetime) -> list[str]:
     return result
 
 
-def tick(now: datetime, dry_run: bool = False) -> list[dict]:
+def model_ready() -> bool:
+    """Check the configured proxy and model without issuing an inference request."""
+    config = json.loads((ROOT / "config/hermes-config.json").read_text())["model"]
+    try:
+        with urllib.request.urlopen(config["base_url"].rstrip("/") + "/models", timeout=5) as response:
+            models = json.load(response).get("data", [])
+        return any(item.get("id") == config["default"] for item in models)
+    except (OSError, ValueError, TypeError, AttributeError):
+        return False
+
+
+def tick(now: datetime, dry_run: bool = False, profile: str = "ambient-finance-demo") -> list[dict]:
     local = now.astimezone(TZ)
     output = []
     for cadence in due(now):
         run_id = f"{local.date().isoformat()}-{cadence}"
-        path = ROOT / "runs" / f"{run_id}.json"
+        path = RUNS / f"{run_id}.json"
+        retry = False
         if path.exists():
-            output.append({"cadence": cadence, "status": "already_recorded"})
-            continue
+            saved = json.loads(path.read_text())
+            retry = saved.get("status") == "review_required" and saved.get("model_status") in ("failed", "running")
+            attempts = list((RUNS / "attempts").glob(f"{run_id}-*.json"))
+            if not retry or len(attempts) >= 2:
+                output.append({"cadence": cadence, "status": "retry_limit_reached" if retry else "already_recorded"})
+                continue
         if dry_run:
             output.append({"cadence": cadence, "status": "would_run"})
             continue
-        result = subprocess.run([sys.executable, str(ROOT / "run_schedule.py"), "--cadence", cadence, "--as-of", local.date().isoformat(), "--with-hermes"], capture_output=True, text=True)
-        output.append({"cadence": cadence, "status": "recorded" if result.returncode == 0 else "failed", "detail": result.stdout.strip() if result.returncode == 0 else result.stderr.strip()})
+        report = calculate(local.date().isoformat(), cadence)
+        if report["status"] == "review_required" and not model_ready():
+            output.append({"cadence": cadence, "status": "waiting_for_model"})
+            continue
+        if retry and report["source_sha256"] != saved["source_sha256"]:
+            output.append({"cadence": cadence, "status": "source_changed"})
+            continue
+        command = [sys.executable, str(ROOT / "run_schedule.py"), "--cadence", cadence, "--as-of", local.date().isoformat(), "--with-hermes", "--profile", profile]
+        if retry:
+            command.append("--retry-model")
+        result = subprocess.run(command, capture_output=True, text=True)
+        output.append({"cadence": cadence, "status": "recorded" if result.returncode == 0 else "failed", "detail": result.stdout.strip() if result.returncode == 0 else (result.stderr.strip() or result.stdout.strip())})
     return output
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument("--profile", default="ambient-finance-demo")
     parser.add_argument("--once", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--now", help="ISO timestamp, for testing only")
@@ -66,7 +97,7 @@ if __name__ == "__main__":
         raise SystemExit("--now requires --dry-run, so a historical test cannot create a scheduled run.")
     while True:
         now = datetime.fromisoformat(args.now) if args.now else datetime.now(TZ)
-        for item in tick(now, args.dry_run):
+        for item in tick(now, args.dry_run, args.profile):
             print(item, flush=True)
         if args.once:
             break

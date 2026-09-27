@@ -1,0 +1,7 @@
+{
+  "sample_date": "2026-09-26",
+  "description": "Explicit current-date sample inputs for launchd lifecycle demonstration; prices are mocked, not refreshed market observations.",
+  "original_portfolio_sha256": "a5609d12826c8a718c740168ee7269d7f89c3ba7ee2d908d2503a36f11654095",
+  "sample_portfolio_sha256": "4ef9949d3129a3f62842e7799b1f1565dde258de18c1200b7593e7c1548643f3",
+  "original_sources_unchanged": true
+}

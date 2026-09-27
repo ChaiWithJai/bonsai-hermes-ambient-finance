@@ -1,0 +1,6 @@
+{
+  "phase": "isolated fixture preparation",
+  "error": "No space left on device",
+  "inference_started": false,
+  "recovery": "Removed unused temporary finance-devrel-check environment after confirming no open files; filesystem write check passed; fresh isolated profile then started."
+}

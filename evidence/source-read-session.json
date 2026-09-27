@@ -1,0 +1,20 @@
+{
+  "session_id": "20260926_172938_970dac",
+  "prompt": "Read the actual analyst source documents for FIC-AST and FIC-CIR. For each position, quote its thesis and risk with a PDF page or CSV row citation. Distinguish extracted document contents from the catalog summary, and report whether they agree. Do not calculate an allocation, save a draft, or claim an investment decision.",
+  "tool_calls": [
+    "mcp__ambient_finance__finance_position",
+    "mcp__ambient_finance__finance_position"
+  ],
+  "final_answer": "Both sources are fictional demonstration data (the tool result is explicitly flagged as fictional; the documents themselves also state they are mock reports). No allocation was calculated, no draft was saved, and nothing below is an investment decision or a forecast.\n\nFIC-AST \u2014 Aster Compute (Infrastructure), price date 2026-09-25, close 110 vs prior close 108. Research ID R-AST, dated 2026-09-18 by Mira Chen, file mock-drive/aster-compute-analyst-note.pdf, sha256 5dd4970...a0296.\nThesis, per PDF page 1: \"Recurring infrastructure subscriptions may offset slower new deployments.\"\nRisk, per PDF page 1: \"Customer concentration could make renewal growth volatile.\"\nThe catalog summary (research_id R-AST) carries the identical thesis and risk sentences, so the catalog and the extracted page agree. The page contains nothing beyond the headline, the thesis, the risk, and a disclaimer that the report is not investment research or an instruction to the agent.\n\nFIC-CIR \u2014 Cirrus Grid (Infrastructure), price date 2026-09-25, close 75 vs prior close 76. Research ID R-CIR, dated 2026-09-11 by Owen Patel, file mock-sheets/cirrus-grid-model.csv, sha256 bd72bd1...32356.\nThesis, per CSV row 4: \"Network capacity contracts support a stable revenue base.\"\nRisk, per CSV row 5: \"Capital spending could reduce free cash flow.\"\nRows 1 through 3 confirm the model header, the research ID R-CIR, the date 2026-09-11, the issuer FIC-CIR (Cirrus Grid), and the analyst Owen Patel. The catalog summary for R-CIR matches rows 4 and 5 verbatim, so the catalog and the extracted rows agree. The file contains only those five rows and no additional model figures.\n\nData age and scope: the FIC-AST research is seven days older than the price date, and the FIC-CIR research is fourteen days older; interpret any scenario against those dates. The documents are one-line summaries with no underlying financial data, so there is nothing beyond the thesis and risk to verify. Since no run ID was supplied, no work item's source_sha256 was available to compare the returned hashes against, so source verification stops at the tool's own read. There are no conflicts between catalog and document for either position.",
+  "usage": [
+    {
+      "model": "bonsai-ui-public-ternary-bonsai2",
+      "api_call_count": 2,
+      "input_tokens": 3776,
+      "output_tokens": 1300,
+      "reasoning_tokens": 0,
+      "cost_status": "unknown"
+    }
+  ],
+  "scope": "Completed Hermes/Bonsai source-reading run over local PDF and CSV documents; no Google, Slack, scheduled execution, write or human approval."
+}

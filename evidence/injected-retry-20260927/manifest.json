@@ -1,0 +1,14 @@
+{
+  "queue_job": "ambient-finance-injected-retry-20260927",
+  "injection": "HTTP400 invalid_request_error from local endpoint after GET readiness succeeds",
+  "as_of": "2026-09-25",
+  "profile": "ambient-finance-retry-integration-20260927",
+  "files": {
+    "scheduler.py": "41ee7ce31cebc1209eeda3cd86c1dcf827a022b0877d537681164e98ce7d8385",
+    "run_schedule.py": "952378dea66d4d9a1b87b30b98aba779b97455d923745084f80f4dc05a95a0c2",
+    "finance.py": "bab89fffa4bd407579ebd2028294b06a6c772420d2c220547adf23138e485f57",
+    "config/SOUL.md": "8c9030d29f0f3324df2a8639c4d9a5b25fe12db019e9ba938b9a20417a74fefb",
+    "config/sampling.json": "af76223d9c54036da433160229981200b426710f33b7b1048d76c83d1b0fd6b5",
+    "start_model.sh": "8cbf6b62f9a78159d4a0c471d35295ab9423c92f736decf1d341276c7357f240"
+  }
+}

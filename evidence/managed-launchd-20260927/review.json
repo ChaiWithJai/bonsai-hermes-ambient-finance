@@ -1,0 +1,12 @@
+{
+  "session_id": "20260926_214801_43f342",
+  "saved_final_matches_session": true,
+  "word_count": 197,
+  "word_limit": 250,
+  "human_review": "pending",
+  "elapsed_seconds": 160.2,
+  "trigger": "launchd kickstart after fixing self-PID false-positive in initial RunAtLoad probe",
+  "clock": "Actual September26 local date; no --now override",
+  "source_scope": "Explicit current-date sample prices; no market-data refresh",
+  "agent_review": "HEL and MER weights and both scenarios match tool evidence. R-MER is139days old; answer requests researcher ownership/date and keeps acceptance unavailable. The response contains one fictional-team qualifier and has not received human editorial approval."
+}

@@ -1,0 +1,7 @@
+The largest exposure is FIC-HEL (Helix Health), at 24.97% of portfolio value, below the 35% issuer limit. It holds 2,500 shares at $64, up from $63, backed by research R-HEL (Mira Chen, 2026-08-28, file hash verified): clinic adoption could grow if integration costs remain low, though reimbursement policy may delay deployments.
+
+The stale-research position is FIC-MER (Meridian Payments), at 20.10% of portfolio value, also under the issuer limit. It holds 1,400 shares at $92, down from $94. Its research R-MER (Owen Patel, 2026-05-10, file hash verified) says transaction volume could rise with merchant additions, but the report is 139 days old, beyond the 90-day review limit.
+
+Both scenarios are illustrative one-period price shocks selected by the fictional team, not forecasts. Scenario S-DOWNSIDE (customer spending contraction) would take value from $640,800 to $570,568, a change of -$70,232 (-10.96%). Scenario S-UPSIDE (enterprise demand expansion) would take value to $694,888, a change of +$54,088 (+8.44%).
+
+The blocking issue: a current report is needed for FIC-MER to refresh R-MER before the analysis can be accepted. Who will obtain the Meridian Payments research update, and by when? Acceptance is unavailable until that is resolved, and no exception for stale research is offered.

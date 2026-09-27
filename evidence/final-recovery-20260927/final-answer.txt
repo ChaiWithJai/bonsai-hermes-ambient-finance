@@ -1,0 +1,11 @@
+Portfolio review draft for run 2026-09-25-daily (figures are sample data for a new reader).
+
+Total portfolio value is $640,800, with $85,000 cash (13.26%) and a one-day change of $300.
+
+The largest position is Helix Health (FIC-HEL), at $160,000, or 24.97% of portfolio value. That is below the 35% per-issuer limit set by the Northstar Growth methodology. Its research note R-HEL is dated 2026-08-28 and flags that reimbursement policy could delay clinic deployments, while clinic adoption could grow if integration costs stay low.
+
+Meridian Payments (FIC-MER) is $128,800, or 20.10% of portfolio value, also under the 35% issuer limit. Its research R-MER, dated 2026-05-10, is 138 days old — beyond the team's 90-day review limit — so this is the stale-research position blocking acceptance.
+
+Assumed scenarios are illustrative one-period price shocks chosen by the team, not forecasts. S-DOWNSIDE (Customer spending contraction) shows a $70,232 loss, -10.96%, ending at $570,568. S-UPSIDE (Enterprise demand expansion) shows a $54,088 gain, +8.44%, ending at $694,888.
+
+Before the review can be finished, the team needs a current Meridian Payments report. Who will obtain a refresh of R-MER, and when? Until that source issue is resolved, acceptance is unavailable; no exception or stale-research override is on the table.
