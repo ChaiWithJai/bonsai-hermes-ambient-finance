@@ -1,8 +1,10 @@
 """Build small, clearly fictional analyst source files without dependencies."""
+import sys
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import csv
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def pdf(path: Path, lines: list[str]) -> None:
