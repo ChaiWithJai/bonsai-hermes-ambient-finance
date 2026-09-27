@@ -52,6 +52,8 @@ sh start_model.sh
 
 Start the request proxy in another terminal with `python3 settings_proxy.py`. It listens on loopback port 5264, forwards to the model on port 62737, applies `config/sampling.json`, and saves each complete request and response in `exchanges/`. The proxy keeps the entire payload on the local machine and does not redact sensitive input, so choose the input data and retention policy accordingly.
 
+If the model stops with reasoning but no answer, the proxy makes one additional request for the final review. The additional request disables thinking and tool calls, and never copies reasoning into the answer. Both raw attempts remain in the exchange record, and a successful response includes their combined token usage. If the additional request still has no complete answer, the proxy returns an error. The worker separately requires a saved Hermes final answer before marking the draft complete.
+
 Create a separate Hermes profile under the installed Hermes home. The setup command refuses to overwrite an existing profile:
 
 ```sh
