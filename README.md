@@ -34,7 +34,7 @@ The scheduler supports nightly, daily, weekly and quarterly checks. It uses the 
 python3 scheduler.py --once --dry-run --now 2026-10-01T09:00:00-04:00
 ```
 
-Run `python3 scheduler.py --once` from a local process supervisor to process all periods due now. Run `python3 scheduler.py` under launchd or another supervisor to check each minute. A Mac that is powered off does no work, and the scheduler does not backfill a missed date. Source refresh is an integration task. With the supplied September 25 prices, runs after that date are recorded as blocked.
+Use `--profile PROFILE_NAME` when the scheduler should call a separate Hermes profile. Run `python3 scheduler.py --once` from a local process supervisor to process all periods due now. Run `python3 scheduler.py` under launchd or another supervisor to check each minute. A Mac that is powered off does no work, and the scheduler does not backfill a missed date. Source refresh is an integration task. With the supplied September 25 prices, runs after that date are recorded as blocked.
 
 On macOS, `python3 install_launch_agent.py` installs a per-user LaunchAgent that runs the one-shot scheduler at login and every five minutes. It discovers the current Python and Hermes paths; inspect an existing job before using `--replace`. Check it with `launchctl print gui/$(id -u)/com.prismml.bonsai-ambient-finance`. To stop it, run `launchctl bootout gui/$(id -u)/com.prismml.bonsai-ambient-finance`. The installer supervises the scheduler only. Keep the model server and sampling proxy available separately before expecting an unattended model draft.
 

@@ -135,7 +135,8 @@ class FinanceTests(unittest.TestCase):
             now = datetime(2026, 9, 25, 9, tzinfo=ZoneInfo("America/New_York"))
             with patch.object(scheduler, "RUNS", run_dir), patch.object(scheduler, "model_ready", return_value=True), patch.object(scheduler.subprocess, "run") as worker:
                 worker.return_value = subprocess.CompletedProcess([], 1, "", "failed")
-                self.assertEqual(scheduler.tick(now)[0]["status"], "failed")
+                self.assertEqual(scheduler.tick(now, profile="isolated-recovery")[0]["status"], "failed")
+                self.assertEqual(worker.call_args.args[0][-3:-1], ["--profile", "isolated-recovery"])
                 self.assertIn("--retry-model", worker.call_args.args[0])
                 attempts = run_dir / "attempts"
                 attempts.mkdir()

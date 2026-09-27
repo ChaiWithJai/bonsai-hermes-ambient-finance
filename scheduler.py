@@ -54,7 +54,7 @@ def model_ready() -> bool:
         return False
 
 
-def tick(now: datetime, dry_run: bool = False) -> list[dict]:
+def tick(now: datetime, dry_run: bool = False, profile: str = "ambient-finance-demo") -> list[dict]:
     local = now.astimezone(TZ)
     output = []
     for cadence in due(now):
@@ -78,7 +78,7 @@ def tick(now: datetime, dry_run: bool = False) -> list[dict]:
         if retry and report["source_sha256"] != saved["source_sha256"]:
             output.append({"cadence": cadence, "status": "source_changed"})
             continue
-        command = [sys.executable, str(ROOT / "run_schedule.py"), "--cadence", cadence, "--as-of", local.date().isoformat(), "--with-hermes"]
+        command = [sys.executable, str(ROOT / "run_schedule.py"), "--cadence", cadence, "--as-of", local.date().isoformat(), "--with-hermes", "--profile", profile]
         if retry:
             command.append("--retry-model")
         result = subprocess.run(command, capture_output=True, text=True)
@@ -88,6 +88,7 @@ def tick(now: datetime, dry_run: bool = False) -> list[dict]:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument("--profile", default="ambient-finance-demo")
     parser.add_argument("--once", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--now", help="ISO timestamp, for testing only")
@@ -96,7 +97,7 @@ if __name__ == "__main__":
         raise SystemExit("--now requires --dry-run, so a historical test cannot create a scheduled run.")
     while True:
         now = datetime.fromisoformat(args.now) if args.now else datetime.now(TZ)
-        for item in tick(now, args.dry_run):
+        for item in tick(now, args.dry_run, args.profile):
             print(item, flush=True)
         if args.once:
             break

@@ -1,0 +1,67 @@
+[
+  {
+    "session_id": "20260926_212125_1f1848",
+    "role": "user",
+    "content_characters": 753
+  },
+  {
+    "session_id": "20260926_212125_1f1848",
+    "role": "assistant",
+    "content_characters": 83
+  },
+  {
+    "session_id": "20260926_212130_453281",
+    "role": "user",
+    "content_characters": 753
+  },
+  {
+    "session_id": "20260926_212130_453281",
+    "role": "assistant",
+    "content_characters": 0
+  },
+  {
+    "session_id": "20260926_212130_453281",
+    "role": "tool",
+    "content_characters": 4365
+  },
+  {
+    "session_id": "20260926_212130_453281",
+    "role": "assistant",
+    "content_characters": 0
+  },
+  {
+    "session_id": "20260926_212130_453281",
+    "role": "tool",
+    "content_characters": 1573
+  },
+  {
+    "session_id": "20260926_212130_453281",
+    "role": "tool",
+    "content_characters": 1720
+  },
+  {
+    "session_id": "20260926_212130_453281",
+    "role": "assistant",
+    "content_characters": 0
+  },
+  {
+    "session_id": "20260926_212130_453281",
+    "role": "tool",
+    "content_characters": 4365
+  },
+  {
+    "session_id": "20260926_212130_453281",
+    "role": "assistant",
+    "content_characters": 0
+  },
+  {
+    "session_id": "20260926_212130_453281",
+    "role": "tool",
+    "content_characters": 608
+  },
+  {
+    "session_id": "20260926_212130_453281",
+    "role": "assistant",
+    "content_characters": 0
+  }
+]

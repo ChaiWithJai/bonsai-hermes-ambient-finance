@@ -1,0 +1,12 @@
+{
+  "injected_failure_recorded": true,
+  "automatic_retry_started": true,
+  "source_hashes_preserved": true,
+  "retry_model_exit_code": 0,
+  "retry_model_status": "failed",
+  "retry_error": "Hermes did not persist a final answer",
+  "retry_elapsed_seconds": 105.9,
+  "human_review": "pending",
+  "successful_recovery": false,
+  "scope": "Direct historical-date scheduler.tick calls; actual HTTP400 injected failure and actual local inference retry; no launchd-triggered inference"
+}

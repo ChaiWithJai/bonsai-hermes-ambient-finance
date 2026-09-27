@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "fictional": true,
+  "as_of": "2026-09-25",
+  "cadence": "daily",
+  "methodology": "Northstar Growth: seek durable revenue growth while keeping each issuer below 35% of total portfolio value, each sector below 60%, and cash above 5%.",
+  "status": "review_required",
+  "total_value_usd": "640800.00",
+  "cash_usd": "85000.00",
+  "cash_weight_pct": "13.26",
+  "daily_change_from_prior_close_usd": "300.00",
+  "positions": [
+    {
+      "id": "FIC-AST",
+      "issuer": "Aster Compute",
+      "sector": "Infrastructure",
+      "value_usd": "132000.00",
+      "weight_pct": "20.60",
+      "change_from_prior_close_usd": "2400.00",
+      "research_id": "R-AST",
+      "price_date": "2026-09-25"
+    },
+    {
+      "id": "FIC-CIR",
+      "issuer": "Cirrus Grid",
+      "sector": "Infrastructure",
+      "value_usd": "135000.00",
+      "weight_pct": "21.07",
+      "change_from_prior_close_usd": "-1800.00",
+      "research_id": "R-CIR",
+      "price_date": "2026-09-25"
+    },
+    {
+      "id": "FIC-HEL",
+      "issuer": "Helix Health",
+      "sector": "Healthcare",
+      "value_usd": "160000.00",
+      "weight_pct": "24.97",
+      "change_from_prior_close_usd": "2500.00",
+      "research_id": "R-HEL",
+      "price_date": "2026-09-25"
+    },
+    {
+      "id": "FIC-MER",
+      "issuer": "Meridian Payments",
+      "sector": "Financial technology",
+      "value_usd": "128800.00",
+      "weight_pct": "20.10",
+      "change_from_prior_close_usd": "-2800.00",
+      "research_id": "R-MER",
+      "price_date": "2026-09-25"
+    }
+  ],
+  "sectors": [
+    {
+      "sector": "Financial technology",
+      "value_usd": "128800.00",
+      "weight_pct": "20.10"
+    },
+    {
+      "sector": "Healthcare",
+      "value_usd": "160000.00",
+      "weight_pct": "24.97"
+    },
+    {
+      "sector": "Infrastructure",
+      "value_usd": "267000.00",
+      "weight_pct": "41.67"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "S-DOWNSIDE",
+      "name": "Customer spending contraction",
+      "assumption": "Illustrative one-period price shocks selected by the fictional investment team, not a statistical forecast.",
+      "change_usd": "-70232.00",
+      "change_pct": "-10.96",
+      "ending_value_usd": "570568.00"
+    },
+    {
+      "id": "S-UPSIDE",
+      "name": "Enterprise demand expansion",
+      "assumption": "Illustrative one-period price shocks selected by the fictional investment team, not a statistical forecast.",
+      "change_usd": "54088.00",
+      "change_pct": "8.44",
+      "ending_value_usd": "694888.00"
+    }
+  ],
+  "issues": [
+    {
+      "code": "research_stale",
+      "position_id": "FIC-MER",
+      "research_id": "R-MER",
+      "age_days": 138,
+      "severity": "review"
+    }
+  ],
+  "source_sha256": {
+    "fixtures/portfolio.json": "a5609d12826c8a718c740168ee7269d7f89c3ba7ee2d908d2503a36f11654095",
+    "fixtures/research.json": "a9b63a86d0d26cf1f307e5e8a7b9c8a2af5024993beb6c98c135537320287923",
+    "mock-drive/aster-compute-analyst-note.pdf": "5dd49704f5ea69d921431616772ae8c49ca0a1310d79f18ade69b3cfe7a02968",
+    "mock-sheets/cirrus-grid-model.csv": "bd72bd18bd3468cc770d807a6775006aadb5f57966689140d250310382822356",
+    "mock-drive/helix-health-review.pdf": "71247aa42e2f77add26bfbc5cfa67bea7432d7ef2cb7ee72a0e216e6473cbede",
+    "mock-sheets/meridian-payments-model.csv": "4a5091e589a90f0413ec6a0085a634fb0ee94cb4f5ceda81483797e041a41ee6"
+  },
+  "trade_execution_available": false,
+  "run_id": "2026-09-25-daily",
+  "created_at_utc": "2026-09-27T01:21:24.516922+00:00",
+  "review_decision": "pending",
+  "model_status": "failed",
+  "model_analysis": null,
+  "model_exit_code": 0,
+  "model_error": "Hermes did not persist a final answer",
+  "model_elapsed_seconds": 105.9
+}
