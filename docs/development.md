@@ -6,7 +6,7 @@
 | `run_schedule.py`, `scheduler.py` | Work-item persistence, cadence and retry behavior. |
 | `managed_tick.py` | Model startup, readiness checks and cleanup. |
 | `review.py` | Human decisions and acceptance checks. |
-| `fixtures/`, `sources/` | Sample inputs and generated report files. |
+| `fixtures/`, `mock-drive/`, `mock-sheets/` | Sample inputs and generated report files. |
 | `config/`, `scripts/` | Agent settings, service helpers and sample generation. |
 | `tests/` | Source, persistence and scheduling regression checks. |
 | `docs/`, `evidence/` | Operating guides and recorded runs. |

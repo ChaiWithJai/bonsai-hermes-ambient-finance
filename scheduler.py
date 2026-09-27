@@ -6,6 +6,7 @@ import json
 import urllib.request
 
 from finance import RUNS, calculate
+from lib.work_item import can_refresh
 import subprocess
 import sys
 import time
@@ -61,17 +62,21 @@ def tick(now: datetime, dry_run: bool = False, profile: str = "ambient-finance-d
         run_id = f"{local.date().isoformat()}-{cadence}"
         path = RUNS / f"{run_id}.json"
         retry = False
+        refresh = False
+        report = None
         if path.exists():
             saved = json.loads(path.read_text())
+            report = calculate(local.date().isoformat(), cadence) if saved.get("status") == "blocked" else None
+            refresh = can_refresh(saved, report or {}) and not (RUNS / f"{run_id}.reviews.jsonl").exists()
             retry = saved.get("status") == "review_required" and saved.get("model_status") in ("failed", "running")
             attempts = list((RUNS / "attempts").glob(f"{run_id}-*.json"))
-            if not retry or len(attempts) >= 2:
+            if not refresh and (not retry or len(attempts) >= 2):
                 output.append({"cadence": cadence, "status": "retry_limit_reached" if retry else "already_recorded"})
                 continue
         if dry_run:
             output.append({"cadence": cadence, "status": "would_run"})
             continue
-        report = calculate(local.date().isoformat(), cadence)
+        report = report if report is not None else calculate(local.date().isoformat(), cadence)
         if report["status"] == "review_required" and not model_ready():
             output.append({"cadence": cadence, "status": "waiting_for_model"})
             continue
@@ -79,7 +84,9 @@ def tick(now: datetime, dry_run: bool = False, profile: str = "ambient-finance-d
             output.append({"cadence": cadence, "status": "source_changed"})
             continue
         command = [sys.executable, str(ROOT / "run_schedule.py"), "--cadence", cadence, "--as-of", local.date().isoformat(), "--with-hermes", "--profile", profile]
-        if retry:
+        if refresh:
+            command.append("--refresh-blocked")
+        elif retry:
             command.append("--retry-model")
         result = subprocess.run(command, capture_output=True, text=True)
         output.append({"cadence": cadence, "status": "recorded" if result.returncode == 0 else "failed", "detail": result.stdout.strip() if result.returncode == 0 else (result.stderr.strip() or result.stdout.strip())})

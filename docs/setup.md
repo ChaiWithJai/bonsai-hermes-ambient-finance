@@ -20,7 +20,7 @@ python3 run_schedule.py --cadence nightly --as-of 2026-09-25
 
 The command writes `runs/2026-09-25-nightly.json`. It refuses to overwrite the file on a scheduled retry, which keeps the original source hashes and calculation intact. A failed model draft can be retried with `--retry-model --with-hermes` when the source hashes are unchanged. The wrapper archives the prior attempt and removes its draft from the tool-readable work item before asking Hermes again. The expected portfolio value is $640,800, with a $300 change from the listed prior closes. The downside scenario is a $70,232 loss under its assumed shocks. The report status is `review_required` because the Meridian note is stale.
 
-A failed Hermes attempt exits with a nonzero status. On the next scheduled check, the scheduler retries a failed draft if the sources are unchanged and the model is available. It allows two automatic retries, preserving each prior attempt, then leaves the failure for investigation. Completed drafts and data-blocked reports are not retried.
+A failed Hermes attempt exits with a nonzero status. On the next scheduled check, the scheduler retries a failed draft if the sources are unchanged and the model is available. It allows two automatic retries, preserving each prior attempt, then leaves the failure for investigation. Completed drafts remain unchanged. A blocked report can be reconsidered when changed sources clear the data checks; the prior record is preserved under `revisions/`.
 
 The scheduler supports nightly, daily, weekly and quarterly checks. It uses the America/New_York clock. The following dry run prints the periods that would be due at a chosen time without creating a report:
 
@@ -74,3 +74,13 @@ Run `python3 -m unittest discover -s tests -v`. The tests check scenario arithme
 ## Inspect the installed configuration
 
 The [configuration screenshot and source record](../docs/recorded-configuration.md) show the installed Hermes endpoint, context, turn limit and tool servers. Compare them with the setup template when reproducing the run.
+
+## Resume a review after refreshing inputs
+
+Once your source provider supplies valid inputs, the next scheduled check reconsiders an unreviewed blocked item. To request the same operation from the CLI:
+
+```sh
+python3 run_schedule.py --cadence daily --as-of YYYY-MM-DD --refresh-blocked --with-hermes
+```
+
+Use the date of the blocked item. The worker requires changed source hashes and passing data checks, archives the earlier record under `revisions/`, and increments `source_revision`. It leaves completed work and items with recorded human reviews untouched. Model failures on unchanged inputs continue to use `--retry-model`.
