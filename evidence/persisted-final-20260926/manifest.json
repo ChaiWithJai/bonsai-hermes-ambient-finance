@@ -1,0 +1,12 @@
+{
+  "scope": "Historical-date local scheduled worker integration, invoked manually with isolated state; not a live unattended trigger",
+  "as_of": "2026-09-25",
+  "profile": "ambient-finance-persisted-final",
+  "files": {
+    "run_schedule.py": "1d160e5f298b1c688b196806a43763c4af473b91390ad61343a13473aeb66cd4",
+    "finance.py": "23f56a68bfc7070c25037d57ff5f64bdff2dc2ab987a200a3975f01e392b7888",
+    "lib/hermes_result.py": "9b7ef1277f3fb00add25a43adaafcb39428f3b52a2075d872c52f681813280cb",
+    "config/SOUL.md": "38d1426f30aa36fa5b2afd87410d2484b9a56523d59abd8014042aec74f611c6",
+    "config/sampling.json": "af76223d9c54036da433160229981200b426710f33b7b1048d76c83d1b0fd6b5"
+  }
+}

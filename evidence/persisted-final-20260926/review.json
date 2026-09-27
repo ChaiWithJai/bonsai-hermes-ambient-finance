@@ -1,0 +1,17 @@
+{
+  "session_id": "20260926_181011_a2eb5f",
+  "saved_final_matches_session": true,
+  "model_status": "completed",
+  "human_acceptance": "pending",
+  "review_requirement_met": false,
+  "review_source": "Agent review against tool requirements, not human label",
+  "word_count": 228,
+  "findings": [
+    {
+      "cluster": "support",
+      "text": "or mark the position acceptable for this review cycle",
+      "issue": "Offers acceptance while the work item has unresolved stale research, contrary to source_review_requirements."
+    }
+  ],
+  "scope": "Manually invoked historical-date scheduled worker with local sample sources; not unattended or connected Google execution"
+}
